@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack PH</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="active"><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('checkupsMenu')">Checkups ▼</a>
+                        <ul class="submenu" id="checkupsMenu">
+                            <li><a href="checkups.html?type=patient">Patient Checkups</a></li>
+                            <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html?type=medication">Medication Inventory</a></li>
+                            <li><a href="inventory.html?type=vaccine">Vaccine Inventory</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Doctors / Nurses / Nutritionists</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <h2 class="page-title">NUTRITRACK DASHBOARD</h2>
+                
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="assets/icons/crowd-of-users.png" alt="Total Patients">
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-value" id="totalPatients">1,234</div>
+                            <div class="stat-label">Total Patients</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="assets/icons/child.png" alt="Total Children">
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-value" id="totalChildren">567</div>
+                            <div class="stat-label">Total Children</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="assets/icons/pregnant.png" alt="Pregnant Women">
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-value" id="totalPregnant">89</div>
+                            <div class="stat-label">Pregnant Women</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="assets/icons/old.png" alt="Senior Citizens">
+                        </div>
+                        <div class="stat-details">
+                            <div class="stat-value" id="totalSenior">210</div>
+                            <div class="stat-label">Senior Citizens</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts and Calendar Row -->
+                <div class="charts-calendar-row">
+                    <!-- Patient Statistics Pie Chart -->
+                    <div class="chart-container">
+                        <h3>Patient Statistics</h3>
+                        <div class="month-display">Month of March 2026</div>
+                        <div class="pie-chart-wrapper">
+                            <canvas id="patientPieChart"></canvas>
+                        </div>
+                        <div class="pie-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #2B6896;"></span>
+                                <span>Children: 567 (46%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #4A90E2;"></span>
+                                <span>Pregnant: 89 (7%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #6C8EB2;"></span>
+                                <span>Senior: 210 (17%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #95B8D1;"></span>
+                                <span>General: 368 (30%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Calendar View -->
+                    <div class="calendar-container">
+                        <h3>Calendar View</h3>
+                        <div class="calendar-header">
+                            <button class="calendar-nav">◀</button>
+                            <span>March 2026</span>
+                            <button class="calendar-nav">▶</button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                        <div class="calendar-days">
+                            <div class="day other-month">23</div><div class="day other-month">24</div><div class="day other-month">25</div><div class="day other-month">26</div><div class="day other-month">27</div><div class="day other-month">28</div><div class="day">1</div>
+                            <div class="day">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div>
+                            <div class="day">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div>
+                            <div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day today">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div>
+                            <div class="day">23</div><div class="day">24</div><div class="day">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div><div class="day">29</div>
+                            <div class="day">30</div><div class="day">31</div><div class="day other-month">1</div><div class="day other-month">2</div><div class="day other-month">3</div><div class="day other-month">4</div><div class="day other-month">5</div>
+                        </div>
+                        <div class="calendar-events">
+                            <div class="event-item">• 09:00 AM - Prenatal Checkup (3 patients)</div>
+                            <div class="event-item">• 10:30 AM - Child Immunization</div>
+                            <div class="event-item">• 02:00 PM - Senior Checkup</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patient Overview Table -->
+                <div class="table-container">
+                    <h3>Patient Overview</h3>
+                    <table class="patient-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Patient Type</th>
+                                <th>Last Visit</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1001</td>
+                                <td>Juan Dela Cruz</td>
+                                <td>5</td>
+                                <td>Male</td>
+                                <td>Child</td>
+                                <td>2026-03-15</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="view-btn">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>1002</td>
+                                <td>Maria Santos</td>
+                                <td>28</td>
+                                <td>Female</td>
+                                <td>Pregnant</td>
+                                <td>2026-03-18</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td><button class="view-btn">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>1003</td>
+                                <td>Pedro Reyes</td>
+                                <td>70</td>
+                                <td>Male</td>
+                                <td>Senior</td>
+                                <td>2026-03-10</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="view-btn">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>1004</td>
+                                <td>Ana Lopez</td>
+                                <td>3</td>
+                                <td>Female</td>
+                                <td>Child</td>
+                                <td>2026-03-14</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td><button class="view-btn">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>1005</td>
+                                <td>Josefa Mendoza</td>
+                                <td>65</td>
+                                <td>Female</td>
+                                <td>Senior</td>
+                                <td>2026-03-12</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="view-btn">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

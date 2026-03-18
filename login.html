@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Barangay Nutrition Scholar Login</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Left side - Login Form -->
+            <div class="login-left">
+                <div class="logo-area">
+                    <h1>NutriTrack</h1>
+                    <p class="subtitle">Barangay Nutrition Scholar System</p>
+                </div>
+                
+                <h2 class="welcome-text">Welcome Back!</h2>
+                <p class="login-instruction">Please login to your account</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember"> Remember me
+                            <span class="checkmark"></span>
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Sign In</button>
+                    
+                    <div id="errorMessage" class="error-message"></div>
+                </form>
+                
+                <!-- Date moved here and will be right-aligned via CSS -->
+                <div class="date-today">
+                    Date Today: <span id="currentDate"></span>
+                </div>
+            </div>
+            
+            <!-- Right side - Illustration -->
+            <div class="login-right">
+                <div class="illustration-content">
+                    <div class="illustration-placeholder">
+                        <!-- You can replace this with an actual image later -->
+                        <div class="placeholder-icon">🏥</div>
+                        <h3>Barangay Health Center</h3>
+                        <p>Empowering community health workers with digital tools for better healthcare delivery</p>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Patient Records Management</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Immunization Tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Prenatal Monitoring</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✓</span>
+                            <span>Nutrition Status Tracking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
