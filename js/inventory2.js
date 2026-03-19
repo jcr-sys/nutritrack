@@ -1,96 +1,51 @@
-// ===== INVENTORY PAGE FUNCTIONALITY =====
+// ===== VACCINE INVENTORY PAGE FUNCTIONALITY =====
 
-// Sample inventory data
+// Sample vaccine inventory data
 let inventory = [
     {
         no: 1,
-        name: "Paracetamol",
-        description: "Pain reliever and fever reducer",
-        dosage: "500mg",
-        form: "Tablet",
-        expiry: "2026-05-10",
-        quantity: 100
-    },
-    {
-        no: 2,
-        name: "Amoxicillin",
-        description: "Antibiotic for bacterial infections",
-        dosage: "250mg",
-        form: "Capsule",
-        expiry: "2025-12-20",
-        quantity: 50
-    },
-    {
-        no: 3,
-        name: "Ibuprofen",
-        description: "Reduces inflammation and pain",
-        dosage: "200mg",
-        form: "Tablet",
-        expiry: "2026-03-15",
-        quantity: 75
-    },
-    {
-        no: 4,
-        name: "Cefalexin",
-        description: "Antibiotic for bacterial infections",
-        dosage: "500mg",
-        form: "Capsule",
-        expiry: "2025-10-30",
-        quantity: 60
-    },
-    {
-        no: 5,
-        name: "Vitamin C",
-        description: "Immune system support",
-        dosage: "1000mg",
-        form: "Tablet",
-        expiry: "2027-01-01",
+        name: "MMR Vaccine",
+        description: "Measles, Mumps, Rubella",
+        dosage: "0.5 mL",
+        form: "Injection",
+        expiry: "2026-08-10",
         quantity: 120
     },
     {
-        no: 6,
-        name: "Diphenhydramine",
-        description: "Allergy relief",
-        dosage: "25mg",
-        form: "Tablet",
-        expiry: "2026-06-20",
+        no: 2,
+        name: "Hepatitis B Vaccine",
+        description: "Protects against Hepatitis B",
+        dosage: "1 mL",
+        form: "Injection",
+        expiry: "2026-05-15",
         quantity: 80
     },
     {
-        no: 7,
-        name: "Azithromycin",
-        description: "Antibiotic for bacterial infections",
-        dosage: "250mg",
-        form: "Tablet",
-        expiry: "2025-09-15",
-        quantity: 40
+        no: 3,
+        name: "DTaP Vaccine",
+        description: "Diphtheria, Tetanus, Pertussis",
+        dosage: "0.5 mL",
+        form: "Injection",
+        expiry: "2026-12-20",
+        quantity: 95
     },
     {
-        no: 8,
-        name: "Metformin",
-        description: "Used for type 2 diabetes",
-        dosage: "500mg",
-        form: "Tablet",
-        expiry: "2026-12-10",
-        quantity: 90
-    },
-    {
-        no: 9,
-        name: "Omeprazole",
-        description: "Reduces stomach acid",
-        dosage: "20mg",
-        form: "Capsule",
-        expiry: "2026-04-05",
+        no: 4,
+        name: "Polio Vaccine",
+        description: "Protects against Polio",
+        dosage: "0.5 mL",
+        form: "Injection",
+        expiry: "2027-03-10",
         quantity: 70
     },
     {
-        no: 10,
-        name: "Insulin",
-        description: "Blood sugar control",
-        dosage: "100IU/mL",
+        no: 5,
+        name: "Influenza Vaccine",
+        description: "Seasonal flu protection",
+        dosage: "0.5 mL",
         form: "Injection",
-        expiry: "2025-11-30",
-        quantity: 25
+        expiry: "2026-11-01",
+        quantity: 150
     }
 ];
 
@@ -195,7 +150,7 @@ function hideaddinventorymodal() {
 
 // Save inventory
 function saveinventory() {
-    const name = document.getElementById('medicineName').value.trim();
+    const name = document.getElementById('vaccineName').value.trim();
     const description = document.getElementById('description').value.trim();
     const dosage = document.getElementById('dosage').value.trim();
     const form = document.getElementById('form').value;
@@ -222,7 +177,7 @@ function saveinventory() {
     loadinventory();
     hideaddinventorymodal();
 
-    alert("Medicine added successfully!");
+    alert("Vaccine added successfully!");
 }
 
 // Initialize page

@@ -67,8 +67,8 @@
                    <li class="has-submenu">
     <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
     <ul class="submenu show" id="inventoryMenu">
-        <li class="active"><a href="inventory.html?type=medicines">Medicines</a></li>
-        <li><a href="inventory2.html?type=vaccines">Vaccines</a></li>
+        <li><a href="inventory.html?type=medicines">Medicines</a></li>
+        <li class="active"><a href="inventory2.html?type=vaccines">Vaccines</a></li>
     </ul>
 </li>
                     
@@ -80,58 +80,51 @@
                     <a href="login.html" class="logout-link">Logout</a>
                 </div>
             </div>
-            
-            <!-- Content Area - Only Table Scrolls -->
+           
+     <!-- Content Area -->
             <div class="content-area">
-                <!-- Fixed Header Section -->
                 <div class="inventory-header">
-                   <h2 class="page-title">MEDICINES</h2>
-<button class="add-inventory-btn">+ Add Stock</button>
+                    <h2 class="page-title">VACCINES</h2>
+                    <button class="add-inventory-btn">+ Add Vaccine</button>
                 </div>
-                
-                <!-- Fixed Search/Sort Section -->
+
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="inventorySearch" placeholder="Find Medicine..">
+                        <input type="text" id="inventorySearch" placeholder="Find Vaccine..">
                         <button onclick="searchinventory()">🔍</button>
                     </div>
-                    
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
                         <select id="sortBy" onchange="sortinventory()">
-    <option value="no">No.</option>
-    <option value="name">Medicine Name</option>
-    <option value="dosage">Dosage</option>
-    <option value="form">Form</option>
-    <option value="expiry">Expiry Date</option>
-    <option value="quantity">Quantity</option>
-</select>
+                            <option value="no">No.</option>
+                            <option value="name">Vaccine Name</option>
+                            <option value="dosage">Dosage</option>
+                            <option value="expiry">Expiry Date</option>
+                            <option value="quantity">Quantity</option>
+                        </select>
                     </div>
                 </div>
-                
-                <!-- Table Container - ONLY THIS SCROLLS -->
+
                 <div class="table-container">
                     <div class="table-wrapper">
                         <table class="inventory-table">
                             <thead>
-    <tr>
-        <th>No.</th>
-        <th>Medicine Name</th>
-        <th>Medicine Description</th>
-        <th>Dosage</th>
-        <th>Form</th>
-        <th>Expiry Date</th>
-        <th>Quantity</th>
-    </tr>
-</thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Vaccine Name</th>
+                                    <th>Vaccine Description</th>
+                                    <th>Dosage</th>
+                                    <th>Expiry Date</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
                             <tbody id="inventoryTableBody">
-                                <!-- Data will be loaded here via JavaScript -->
+                                <!-- Vaccine data will be loaded via JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-                
-                <!-- Fixed Footer -->
+
                 <div class="date-footer">
                     Date today: <span id="currentDate"></span>
                 </div>
@@ -139,69 +132,51 @@
         </div>
     </div>
 
-    <!-- Add Inventory Modal -->
-<div class="modal" id="addinventoryModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add Medicine</h2>
-            <button class="close-modal" onclick="hideAddinventoryModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <form id="inventoryForm">
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Medicine Name *</label>
-                        <input type="text" id="medicineName" required>
+    <!-- Add Vaccine Modal -->
+    <div class="modal" id="addinventoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Vaccine</h2>
+                <button class="close-modal" onclick="hideaddinventorymodal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="inventoryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vaccine Name *</label>
+                            <input type="text" id="medicineName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dosage *</label>
+                            <input type="text" id="dosage" placeholder="e.g. 0.5ml" required>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Dosage *</label>
-                        <input type="text" id="dosage" placeholder="e.g. 500mg" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vaccine Description</label>
+                            <textarea id="description" rows="3"></textarea>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Form *</label>
-                        <select id="form" required>
-                            <option value="">Select Form</option>
-                            <option value="Tablet">Tablet</option>
-                            <option value="Capsule">Capsule</option>
-                            <option value="Syrup">Syrup</option>
-                            <option value="Injection">Injection</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date *</label>
+                            <input type="date" id="expiryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" min="0" required>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Medicine Description</label>
-                        <textarea id="description" rows="3"></textarea>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Expiry Date *</label>
-                        <input type="date" id="expiryDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quantity *</label>
-                        <input type="number" id="quantity" min="0" required>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-
-        <div class="modal-footer">
-            <button class="cancel-btn" onclick="hideAddinventoryModal()">Cancel</button>
-            <button class="save-btn" onclick="saveinventory()">Save Medicine</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideaddinventorymodal()">Cancel</button>
+                <button class="save-btn" onclick="saveinventory()">Save Vaccine</button>
+            </div>
         </div>
     </div>
-</div>
+
     <script src="js/main.js"></script>
-    <script src="js/inventory.js"></script>
+    <script src="js/inventory2.js"></script>
 </body>
 </html>
