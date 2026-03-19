@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html">Medicines</a></li>
+                            <li><a href="inventory2.html">Vaccines</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li><a href="payroll.html">Reports</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+
+<div class="content-area">
+    <div class="page-header-actions">
+        <div class="table-title-area">
+            <h2>Senior Records</h2>
+        </div>
+        <div class="action-buttons">
+            <button class="icon-btn active">☰</button>
+            <button class="icon-btn">⊞</button>
+            <button class="add-btn">+ Add Record</button>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <div class="table-controls">
+            <div class="filters-left">
+                <input type="text" class="control-input" placeholder="🔍 Search..">
+                <select class="control-input">
+                    <option>Sort by: Patient ID</option>
+                </select>
+                <button class="icon-btn">Y</button>
+                <button class="icon-btn">✎</button>
+            </div>
+            <div class="pagination-right">
+                <span>Page 1</span>
+                <button class="page-btn">❮</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">❯</button>
+                <span>Page 2</span>
+            </div>
+        </div>
+
+        <table class="patient-table">
+            <thead>
+                <tr>
+                    <th>Senior Record ID</th>
+                    <th>Patient ID</th>
+                    <th>Medicine ID</th>
+                    <th>Medication History</th>
+                    <th>Physical Activity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>Taking Losartan for 2 years</td>
+                    <td>Light Walking</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>10</td>
+                    <td>2</td>
+                    <td>On Metformin since 2022</td>
+                    <td>Yoga</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>12</td>
+                    <td>4</td>
+                    <td>Started Simvastatin 6 months ago</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>22</td>
+                    <td>6</td>
+                    <td>Calcium meds taken every morning</td>
+                    <td>Brisk Walking</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

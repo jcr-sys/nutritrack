@@ -527,6 +527,112 @@ body {
     background: #1a4a6f;
 }
 
+/* ===== DATA TABLE CONTROLS ===== */
+.page-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-title-area h2 {
+    color: #2B6896;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: #e4edf5;
+    color: #2B6896;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn.active {
+    background: #95B8D1;
+    color: white;
+}
+
+.add-btn {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.add-btn:hover {
+    background: #f9f9f9;
+}
+
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filters-left {
+    display: flex;
+    gap: 10px;
+}
+
+.control-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    color: #555;
+    min-width: 200px;
+}
+
+.pagination-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.page-btn {
+    background: #e4edf5;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #2B6896;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.patient-table th {
+    background: transparent;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+}
+
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
     .stats-grid {
