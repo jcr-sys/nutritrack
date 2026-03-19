@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Inventory</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/inventory.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header (Fixed) -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack PH</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation (Fixed) -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('checkupsMenu')">Checkups ▼</a>
+                        <ul class="submenu" id="checkupsMenu">
+                            <li><a href="checkups.html?type=patient">Patient Checkups</a></li>
+                            <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                   <li class="has-submenu">
+    <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+    <ul class="submenu show" id="inventoryMenu">
+        <li><a href="inventory.html?type=medicines">Medicines</a></li>
+        <li class="active"><a href="inventory2.html?type=vaccines">Vaccines</a></li>
+    </ul>
+</li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Doctors / Nurses / Nutritionists</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+           
+     <!-- Content Area -->
+            <div class="content-area">
+                <div class="inventory-header">
+                    <h2 class="page-title">VACCINES</h2>
+                    <button class="add-inventory-btn">+ Add Vaccine</button>
+                </div>
+
+                <div class="search-sort-container">
+                    <div class="search-box">
+                        <input type="text" id="inventorySearch" placeholder="Find Vaccine..">
+                        <button onclick="searchinventory()">🔍</button>
+                    </div>
+                    <div class="sort-box">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy" onchange="sortinventory()">
+                            <option value="no">No.</option>
+                            <option value="name">Vaccine Name</option>
+                            <option value="dosage">Dosage</option>
+                            <option value="expiry">Expiry Date</option>
+                            <option value="quantity">Quantity</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Vaccine Name</th>
+                                    <th>Vaccine Description</th>
+                                    <th>Dosage</th>
+                                    <th>Expiry Date</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <!-- Vaccine data will be loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="date-footer">
+                    Date today: <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vaccine Modal -->
+    <div class="modal" id="addinventoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Vaccine</h2>
+                <button class="close-modal" onclick="hideaddinventorymodal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="inventoryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vaccine Name *</label>
+                            <input type="text" id="medicineName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dosage *</label>
+                            <input type="text" id="dosage" placeholder="e.g. 0.5ml" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vaccine Description</label>
+                            <textarea id="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date *</label>
+                            <input type="date" id="expiryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" min="0" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideaddinventorymodal()">Cancel</button>
+                <button class="save-btn" onclick="saveinventory()">Save Vaccine</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/inventory2.js"></script>
+</body>
+</html>
