@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Inventory</title>
+    <title>NutriTrack PH - Medicines Inventory</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/inventory.css">
 </head>
@@ -13,7 +13,7 @@
         <div class="app-header">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-                <h1>NutriTrack PH</h1>
+                <h1>NutriTrack</h1>
             </div>
             
             <div class="search-container">
@@ -29,7 +29,7 @@
         
         <!-- Main Content with Sidebar -->
         <div class="main-content">
-            <!-- Sidebar Navigation (Fixed) -->
+            <!-- Sidebar Navigation -->
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <h3>Menu</h3>
@@ -37,14 +37,7 @@
                 <ul class="sidebar-menu">
                     <li><a href="dashboard.html">Dashboard</a></li>
                     <li><a href="patients.html">Patients</a></li>
-                    
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu('checkupsMenu')">Checkups ▼</a>
-                        <ul class="submenu" id="checkupsMenu">
-                            <li><a href="checkups.html?type=patient">Patient Checkups</a></li>
-                            <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
                     
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
@@ -64,48 +57,51 @@
                         </ul>
                     </li>
                     
-                   <li class="has-submenu">
-    <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
-    <ul class="submenu show" id="inventoryMenu">
-        <li class="active"><a href="inventory.html?type=medicines">Medicines</a></li>
-        <li><a href="inventory2.html?type=vaccines">Vaccines</a></li>
-    </ul>
-</li>
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html">Medicines</a></li>
+                            <li><a href="inventory2.html">Vaccines</a></li>
+                        </ul>
+                    </li>
                     
                     <li><a href="immunizations.html">Child Immunizations</a></li>
-                    <li><a href="staff.html">Doctors / Nurses / Nutritionists</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li><a href="payroll.html">Reports</a></li>
+                    <li><a href="reports.html">Reports</a></li>
                 </ul>
                 
                 <div class="sidebar-footer">
                     <a href="login.html" class="logout-link">Logout</a>
                 </div>
             </div>
-            
+                        
             <!-- Content Area - Only Table Scrolls -->
             <div class="content-area">
                 <!-- Fixed Header Section -->
                 <div class="inventory-header">
-                   <h2 class="page-title">MEDICINES</h2>
-<button class="add-inventory-btn">+ Add Stock</button>
+                    <h2 class="page-title">MEDICINES</h2>
+                    <button class="add-inventory-btn" onclick="showAddInventoryModal()">+ Add Medicine</button>
                 </div>
                 
                 <!-- Fixed Search/Sort Section -->
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="inventorySearch" placeholder="Find Medicine..">
-                        <button onclick="searchinventory()">🔍</button>
+                        <input type="text" id="inventorySearch" placeholder="Find Medicine...">
+                        <button onclick="searchInventory()">🔍</button>
                     </div>
                     
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
-                        <select id="sortBy" onchange="sortinventory()">
-    <option value="no">No.</option>
-    <option value="name">Medicine Name</option>
-    <option value="dosage">Dosage</option>
-    <option value="form">Form</option>
-    <option value="expiry">Expiry Date</option>
-    <option value="quantity">Quantity</option>
-</select>
+                        <select id="sortBy" onchange="sortInventory()">
+                            <option value="no">No.</option>
+                            <option value="name">Medicine Name</option>
+                            <option value="dosage">Dosage</option>
+                            <option value="form">Form</option>
+                            <option value="expiry">Expiry Date</option>
+                            <option value="quantity">Quantity</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -114,16 +110,17 @@
                     <div class="table-wrapper">
                         <table class="inventory-table">
                             <thead>
-    <tr>
-        <th>No.</th>
-        <th>Medicine Name</th>
-        <th>Medicine Description</th>
-        <th>Dosage</th>
-        <th>Form</th>
-        <th>Expiry Date</th>
-        <th>Quantity</th>
-    </tr>
-</thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Medicine Name</th>
+                                    <th>Medicine Description</th>
+                                    <th>Dosage</th>
+                                    <th>Form</th>
+                                    <th>Expiry Date</th>
+                                    <th>Quantity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody id="inventoryTableBody">
                                 <!-- Data will be loaded here via JavaScript -->
                             </tbody>
@@ -139,68 +136,60 @@
         </div>
     </div>
 
-    <!-- Add Inventory Modal -->
-<div class="modal" id="addinventoryModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add Medicine</h2>
-            <button class="close-modal" onclick="hideAddinventoryModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <form id="inventoryForm">
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Medicine Name *</label>
-                        <input type="text" id="medicineName" required>
+    <!-- Add Medicine Modal -->
+    <div class="modal" id="addInventoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Medicine</h2>
+                <button class="close-modal" onclick="hideAddInventoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="inventoryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Medicine Name *</label>
+                            <input type="text" id="medicineName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dosage *</label>
+                            <input type="text" id="dosage" placeholder="e.g. 500mg" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Form *</label>
+                            <select id="form" required>
+                                <option value="">Select Form</option>
+                                <option value="Tablet">Tablet</option>
+                                <option value="Capsule">Capsule</option>
+                                <option value="Syrup">Syrup</option>
+                                <option value="Injection">Injection</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Dosage *</label>
-                        <input type="text" id="dosage" placeholder="e.g. 500mg" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Medicine Description</label>
+                            <textarea id="description" rows="3" placeholder="Enter description..."></textarea>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Form *</label>
-                        <select id="form" required>
-                            <option value="">Select Form</option>
-                            <option value="Tablet">Tablet</option>
-                            <option value="Capsule">Capsule</option>
-                            <option value="Syrup">Syrup</option>
-                            <option value="Injection">Injection</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date *</label>
+                            <input type="date" id="expiryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" min="0" required>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Medicine Description</label>
-                        <textarea id="description" rows="3"></textarea>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Expiry Date *</label>
-                        <input type="date" id="expiryDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quantity *</label>
-                        <input type="number" id="quantity" min="0" required>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-
-        <div class="modal-footer">
-            <button class="cancel-btn" onclick="hideAddinventoryModal()">Cancel</button>
-            <button class="save-btn" onclick="saveinventory()">Save Medicine</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideAddInventoryModal()">Cancel</button>
+                <button class="save-btn" onclick="saveInventory()">Save Medicine</button>
+            </div>
         </div>
     </div>
-</div>
+
     <script src="js/main.js"></script>
     <script src="js/inventory.js"></script>
 </body>

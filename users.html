@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Pregnancy Checkups</title>
+    <title>NutriTrack PH - User Maintenance</title>
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/checkups.css">
+    <link rel="stylesheet" href="css/users.css">
 </head>
 <body>
     <div class="app-container">
@@ -80,26 +80,28 @@
             <!-- Content Area - Only Table Scrolls (Same as Patients) -->
             <div class="content-area">
                 <!-- Fixed Header Section -->
-                <div class="checkups-header">
-                    <h2 class="page-title">PREGNANCY CHECKUPS</h2>
-                    <button class="add-checkup-btn" onclick="showAddCheckupModal()">+ Add Checkup</button>
+                <div class="users-header">
+                    <h2 class="page-title">USER MAINTENANCE</h2>
+                    <button class="add-user-btn" onclick="showAddUserModal()">+ Add User</button>
                 </div>
                 
                 <!-- Fixed Search/Sort Section (Identical to Patients) -->
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="checkupSearch" placeholder="Find by Patient ID or Doctor ID...">
-                        <button onclick="searchCheckups()">🔍</button>
+                        <input type="text" id="userSearch" placeholder="Find by Username, Name, Position, or Department...">
+                        <button onclick="searchUsers()">🔍</button>
                     </div>
                     
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
-                        <select id="sortBy" onchange="sortCheckups()">
-                            <option value="patient_id">Patient ID</option>
-                            <option value="checkup_date">Checkup Date</option>
-                            <option value="doctor_id">Doctor ID</option>
-                            <option value="trimester">Trimester</option>
-                            <option value="gestational_age">Gestational Age</option>
+                        <select id="sortBy" onchange="sortUsers()">
+                            <option value="user_id">User ID</option>
+                            <option value="username">Username</option>
+                            <option value="name">Name</option>
+                            <option value="position">Position</option>
+                            <option value="department">Department</option>
+                            <option value="date_created">Date Created</option>
+                            <option value="access_level">Access Level</option>
                         </select>
                     </div>
                 </div>
@@ -107,24 +109,21 @@
                 <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
                 <div class="table-container">
                     <div class="table-wrapper">
-                        <table class="checkups-table">
+                        <table class="users-table">
                             <thead>
                                 <tr>
-                                    <th>Patient ID</th>
-                                    <th>Doctor ID</th>
-                                    <th>Checkup Date</th>
-                                    <th>Trimester</th>
-                                    <th>Gestational Age</th>
-                                    <th>Blood Pressure</th>
-                                    <th>Weight (kg)</th>
-                                    <th>Ultrasound Result</th>
-                                    <th>Blood Test Result</th>
-                                    <th>Doctor Notes</th>
-                                    <th>Next Checkup Date</th>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Department</th>
+                                    <th>Date Created</th>
+                                    <th>Access Level</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="checkupsTableBody">
+                            <tbody id="usersTableBody">
                                 <!-- Data will be loaded here via JavaScript -->
                             </tbody>
                         </table>
@@ -139,94 +138,65 @@
         </div>
     </div>
 
-    <!-- Add Checkup Modal (Same style as Patients) -->
-    <div class="modal" id="addCheckupModal">
+    <!-- Add User Modal (Same style as Patients) -->
+    <div class="modal" id="addUserModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Pregnancy Checkup</h2>
-                <button class="close-modal" onclick="hideAddCheckupModal()">&times;</button>
+                <h2>Add New User</h2>
+                <button class="close-modal" onclick="hideAddUserModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="checkupForm">
+                <form id="userForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Patient ID *</label>
-                            <input type="text" id="patientId" required placeholder="e.g., 1002">
+                            <label>Username *</label>
+                            <input type="text" id="username" required placeholder="e.g., jdelacruz">
                         </div>
                         <div class="form-group">
-                            <label>Doctor ID *</label>
-                            <input type="text" id="doctorId" required placeholder="e.g., 3">
+                            <label>Password *</label>
+                            <input type="password" id="password" required placeholder="Enter password">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Checkup Date *</label>
-                            <input type="date" id="checkupDate" required>
+                            <label>Full Name *</label>
+                            <input type="text" id="name" required placeholder="e.g., Juan Dela Cruz">
                         </div>
                         <div class="form-group">
-                            <label>Trimester *</label>
-                            <select id="trimester" required>
-                                <option value="">Select Trimester</option>
-                                <option value="1">1st Trimester</option>
-                                <option value="2">2nd Trimester</option>
-                                <option value="3">3rd Trimester</option>
+                            <label>Position *</label>
+                            <input type="text" id="position" required placeholder="e.g., BNS Worker">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <input type="text" id="department" required placeholder="e.g., Health Center">
+                        </div>
+                        <div class="form-group">
+                            <label>Access Level *</label>
+                            <select id="accessLevel" required>
+                                <option value="">Select Access Level</option>
+                                <option value="Admin">Admin</option>
+                                <option value="BNS Worker">BNS Worker</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="Nutritionist">Nutritionist</option>
+                                <option value="Staff">Staff</option>
+                                <option value="View Only">View Only</option>
                             </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Gestational Age (weeks) *</label>
-                            <input type="number" id="gestationalAge" min="1" max="42" required placeholder="e.g., 12">
-                        </div>
-                        <div class="form-group">
-                            <label>Blood Pressure</label>
-                            <input type="text" id="bloodPressure" placeholder="e.g., 120/80 mmHg">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Weight (kg)</label>
-                            <input type="number" id="weight" step="0.1" placeholder="e.g., 58.5">
-                        </div>
-                        <div class="form-group">
-                            <label>Next Checkup Date</label>
-                            <input type="date" id="nextCheckupDate">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Ultrasound Result</label>
-                            <textarea id="ultrasoundResult" rows="2" placeholder="e.g., Normal fetal growth"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Blood Test Result</label>
-                            <textarea id="bloodTestResult" rows="2" placeholder="e.g., Hemoglobin: 12.5 g/dL"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Doctor Notes</label>
-                            <textarea id="doctorNotes" rows="2" placeholder="e.g., No complications found"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="cancel-btn" onclick="hideAddCheckupModal()">Cancel</button>
-                <button class="save-btn" onclick="saveCheckup()">Save Checkup</button>
+                <button class="cancel-btn" onclick="hideAddUserModal()">Cancel</button>
+                <button class="save-btn" onclick="saveUser()">Save User</button>
             </div>
         </div>
     </div>
 
     <script src="js/main.js"></script>
-    <script src="js/checkups.js"></script>
+    <script src="js/users.js"></script>
 </body>
 </html>

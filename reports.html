@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Reports</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/reports.css">
+    <!-- PDF generation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <!-- HTML to Canvas for better PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header (Fixed) -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html">Medicines</a></li>
+                            <li><a href="inventory2.html">Vaccines</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                    <li><a href="payroll.html">Reports</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li class="active"><a href="reports.html">Reports</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="reports-header">
+                    <h2 class="page-title">HEALTH REPORTS</h2>
+                    <div class="header-actions">
+                        <button class="generate-report-btn" onclick="generateMonthlyReport()">
+                            <span class="btn-icon">📊</span> Generate Monthly Report
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Report Filters -->
+                <div class="filters-container">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label for="reportType">Report Type:</label>
+                            <select id="reportType" onchange="updateReportPreview()">
+                                <option value="nutrition">Nutrition Status Report</option>
+                                <option value="immunization">Immunization Coverage Report</option>
+                                <option value="maternal">Maternal Health Report</option>
+                                <option value="senior">Senior Health Report</option>
+                                <option value="inventory">Inventory Summary Report</option>
+                                <option value="appointment">Appointment Summary Report</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="month">Month:</label>
+                            <select id="month" onchange="updateReportPreview()">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="year">Year:</label>
+                            <select id="year" onchange="updateReportPreview()">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Barangay selector removed - fixed to Brgy. Dalig only -->
+                        <div class="filter-group">
+                            <label>Barangay:</label>
+                            <div class="barangay-display">
+                                <span class="barangay-badge">Brgy. Dalig, Teresa, Rizal</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons-row">
+                        <button class="export-btn pdf" onclick="exportToPDF()">
+                            <span class="btn-icon">📄</span> Export to PDF
+                        </button>
+                        <button class="export-btn excel" onclick="exportToExcel()">
+                            <span class="btn-icon">📊</span> Export to Excel
+                        </button>
+                        <button class="export-btn print" onclick="printReport()">
+                            <span class="btn-icon">🖨️</span> Print
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Report Preview Container -->
+                <div class="report-preview-container">
+                    <div class="report-header">
+                        <h3 id="reportTitle">Monthly Nutrition Status Report</h3>
+                        <div class="report-meta">
+                            <span id="reportPeriod">March 2026</span>
+                            <span id="reportLocation">Brgy. Dalig, Teresa, Rizal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="report-content" id="reportContent">
+                        <!-- Report content will be dynamically loaded here -->
+                    </div>
+                    
+                    <div class="report-footer">
+                        <div class="signature-section">
+                            <div class="signature-line">
+                                <span class="signature-label">Prepared by:</span>
+                                <span class="signature-name" id="preparedBy">Maria Santos, BNS Worker</span>
+                            </div>
+                            <div class="signature-line">
+                                <span class="signature-label">Date:</span>
+                                <span class="signature-date" id="reportDate">March 19, 2026</span>
+                            </div>
+                        </div>
+                        <div class="signature-section">
+                            <div class="signature-line">
+                                <span class="signature-label">Noted by:</span>
+                                <span class="signature-name" id="notedBy">Dr. Juan Reyes, Municipal Health Officer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/reports.js"></script>
+</body>
+</html>

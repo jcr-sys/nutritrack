@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Inventory</title>
+    <title>NutriTrack PH - Vaccines Inventory</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/inventory.css">
 </head>
@@ -13,7 +13,7 @@
         <div class="app-header">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-                <h1>NutriTrack PH</h1>
+                <h1>NutriTrack</h1>
             </div>
             
             <div class="search-container">
@@ -29,7 +29,7 @@
         
         <!-- Main Content with Sidebar -->
         <div class="main-content">
-            <!-- Sidebar Navigation (Fixed) -->
+            <!-- Sidebar Navigation -->
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <h3>Menu</h3>
@@ -37,14 +37,7 @@
                 <ul class="sidebar-menu">
                     <li><a href="dashboard.html">Dashboard</a></li>
                     <li><a href="patients.html">Patients</a></li>
-                    
-                    <li class="has-submenu">
-                        <a href="#" onclick="toggleSubmenu('checkupsMenu')">Checkups ▼</a>
-                        <ul class="submenu" id="checkupsMenu">
-                            <li><a href="checkups.html?type=patient">Patient Checkups</a></li>
-                            <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
                     
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
@@ -64,38 +57,41 @@
                         </ul>
                     </li>
                     
-                   <li class="has-submenu">
-    <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
-    <ul class="submenu show" id="inventoryMenu">
-        <li><a href="inventory.html?type=medicines">Medicines</a></li>
-        <li class="active"><a href="inventory2.html?type=vaccines">Vaccines</a></li>
-    </ul>
-</li>
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html">Medicines</a></li>
+                            <li><a href="inventory2.html">Vaccines</a></li>
+                        </ul>
+                    </li>
                     
                     <li><a href="immunizations.html">Child Immunizations</a></li>
-                    <li><a href="staff.html">Doctors / Nurses / Nutritionists</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li><a href="payroll.html">Reports</a></li>
+                    <li><a href="reports.html">Reports</a></li>
                 </ul>
                 
                 <div class="sidebar-footer">
                     <a href="login.html" class="logout-link">Logout</a>
                 </div>
             </div>
-           
-     <!-- Content Area -->
+            
+            <!-- Content Area -->
             <div class="content-area">
                 <div class="inventory-header">
                     <h2 class="page-title">VACCINES</h2>
-                    <button class="add-inventory-btn">+ Add Vaccine</button>
+                    <button class="add-inventory-btn" onclick="showAddInventoryModal()">+ Add Vaccine</button>
                 </div>
 
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="inventorySearch" placeholder="Find Vaccine..">
-                        <button onclick="searchinventory()">🔍</button>
+                        <input type="text" id="inventorySearch" placeholder="Find Vaccine...">
+                        <button onclick="searchInventory()">🔍</button>
                     </div>
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
-                        <select id="sortBy" onchange="sortinventory()">
+                        <select id="sortBy" onchange="sortInventory()">
                             <option value="no">No.</option>
                             <option value="name">Vaccine Name</option>
                             <option value="dosage">Dosage</option>
@@ -114,8 +110,10 @@
                                     <th>Vaccine Name</th>
                                     <th>Vaccine Description</th>
                                     <th>Dosage</th>
+                                    <th>Form</th>
                                     <th>Expiry Date</th>
                                     <th>Quantity</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="inventoryTableBody">
@@ -133,28 +131,37 @@
     </div>
 
     <!-- Add Vaccine Modal -->
-    <div class="modal" id="addinventoryModal">
+    <div class="modal" id="addInventoryModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Add Vaccine</h2>
-                <button class="close-modal" onclick="hideaddinventorymodal()">&times;</button>
+                <button class="close-modal" onclick="hideAddInventoryModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="inventoryForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Vaccine Name *</label>
-                            <input type="text" id="medicineName" required>
+                            <input type="text" id="vaccineName" required>
                         </div>
                         <div class="form-group">
                             <label>Dosage *</label>
                             <input type="text" id="dosage" placeholder="e.g. 0.5ml" required>
                         </div>
+                        <div class="form-group">
+                            <label>Form *</label>
+                            <select id="form" required>
+                                <option value="">Select Form</option>
+                                <option value="Injection">Injection</option>
+                                <option value="Oral">Oral</option>
+                                <option value="Nasal Spray">Nasal Spray</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Vaccine Description</label>
-                            <textarea id="description" rows="3"></textarea>
+                            <textarea id="description" rows="3" placeholder="Enter description..."></textarea>
                         </div>
                     </div>
                     <div class="form-row">
@@ -170,8 +177,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="cancel-btn" onclick="hideaddinventorymodal()">Cancel</button>
-                <button class="save-btn" onclick="saveinventory()">Save Vaccine</button>
+                <button class="cancel-btn" onclick="hideAddInventoryModal()">Cancel</button>
+                <button class="save-btn" onclick="saveInventory()">Save Vaccine</button>
             </div>
         </div>
     </div>

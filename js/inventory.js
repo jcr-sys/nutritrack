@@ -1,4 +1,4 @@
-// ===== INVENTORY PAGE FUNCTIONALITY =====
+// ===== MEDICINES INVENTORY PAGE FUNCTIONALITY =====
 
 // Sample inventory data
 let inventory = [
@@ -95,16 +95,17 @@ let inventory = [
 ];
 
 // Display current date
-function displaycurrentdate() {
+function displayCurrentDate() {
     const dateElement = document.getElementById('currentDate');
     if (dateElement) {
         const today = new Date();
-        dateElement.textContent = today.toLocaleDateString();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString('en-US', options);
     }
 }
 
 // Load inventory into table
-function loadinventory() {
+function loadInventory() {
     const tableBody = document.getElementById('inventoryTableBody');
     if (!tableBody) return;
 
@@ -112,7 +113,6 @@ function loadinventory() {
 
     inventory.forEach(item => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
             <td>${item.no}</td>
             <td>${item.name}</td>
@@ -121,53 +121,54 @@ function loadinventory() {
             <td>${item.form}</td>
             <td>${item.expiry}</td>
             <td>${item.quantity}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="view-btn" onclick="viewItem(${item.no})">View</button>
+                    <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
+                    <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
+                </div>
+            </td>
         `;
-
         tableBody.appendChild(row);
     });
 }
 
 // Search inventory
-function searchinventory() {
-    const searchTerm = (document.getElementById('inventorySearch').value || '').toLowerCase();
-
+function searchInventory() {
+    const searchTerm = document.getElementById('inventorySearch')?.value.toLowerCase() || '';
     const filtered = inventory.filter(item =>
-        (item.name || '').toLowerCase().includes(searchTerm) ||
+        item.name.toLowerCase().includes(searchTerm) ||
         (item.description || '').toLowerCase().includes(searchTerm) ||
-        (item.form || '').toLowerCase().includes(searchTerm)
+        item.form.toLowerCase().includes(searchTerm) ||
+        item.dosage.toLowerCase().includes(searchTerm)
     );
-
-    displayinventory(filtered);
+    displayFilteredInventory(filtered);
 }
 
 // Sort inventory
-function sortinventory() {
+function sortInventory() {
     const sortBy = document.getElementById('sortBy').value;
-
     const sorted = [...inventory].sort((a, b) => {
         let valA = a[sortBy];
         let valB = b[sortBy];
-
         if (sortBy === 'no' || sortBy === 'quantity') {
             return valA - valB;
         }
-
+        if (sortBy === 'expiry') {
+            return new Date(valA) - new Date(valB);
+        }
         return String(valA).localeCompare(String(valB));
     });
-
-    displayinventory(sorted);
+    displayFilteredInventory(sorted);
 }
 
 // Display filtered/sorted inventory
-function displayinventory(list) {
+function displayFilteredInventory(list) {
     const tableBody = document.getElementById('inventoryTableBody');
     if (!tableBody) return;
-
     tableBody.innerHTML = '';
-
     list.forEach(item => {
         const row = document.createElement('tr');
-
         row.innerHTML = `
             <td>${item.no}</td>
             <td>${item.name}</td>
@@ -176,41 +177,47 @@ function displayinventory(list) {
             <td>${item.form}</td>
             <td>${item.expiry}</td>
             <td>${item.quantity}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="view-btn" onclick="viewItem(${item.no})">View</button>
+                    <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
+                    <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
+                </div>
+            </td>
         `;
-
         tableBody.appendChild(row);
     });
 }
 
 // Show modal
-function showaddinventorymodal() {
-    document.getElementById('addinventoryModal').classList.add('show');
+function showAddInventoryModal() {
+    document.getElementById('addInventoryModal').classList.add('show');
 }
 
 // Hide modal
-function hideaddinventorymodal() {
-    document.getElementById('addinventoryModal').classList.remove('show');
+function hideAddInventoryModal() {
+    document.getElementById('addInventoryModal').classList.remove('show');
     document.getElementById('inventoryForm').reset();
 }
 
 // Save inventory
-function saveinventory() {
-    const name = document.getElementById('medicineName').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const dosage = document.getElementById('dosage').value.trim();
-    const form = document.getElementById('form').value;
-    const expiry = document.getElementById('expiryDate').value;
-    const quantity = document.getElementById('quantity').value;
+function saveInventory() {
+    const name = document.getElementById('medicineName')?.value.trim();
+    const description = document.getElementById('description')?.value.trim();
+    const dosage = document.getElementById('dosage')?.value.trim();
+    const form = document.getElementById('form')?.value;
+    const expiry = document.getElementById('expiryDate')?.value;
+    const quantity = document.getElementById('quantity')?.value;
 
     if (!name || !dosage || !form || !expiry || !quantity) {
-        alert("Please fill in all required fields");
+        alert('Please fill in all required fields');
         return;
     }
 
     const newItem = {
         no: inventory.length + 1,
         name,
-        description,
+        description: description || '',
         dosage,
         form,
         expiry,
@@ -218,21 +225,50 @@ function saveinventory() {
     };
 
     inventory.push(newItem);
+    loadInventory();
+    hideAddInventoryModal();
+    alert('Medicine added successfully!');
+}
 
-    loadinventory();
-    hideaddinventorymodal();
+// View item
+function viewItem(no) {
+    const item = inventory.find(i => i.no === no);
+    if (item) {
+        alert(`Medicine Details:
+Name: ${item.name}
+Dosage: ${item.dosage}
+Form: ${item.form}
+Description: ${item.description || 'N/A'}
+Expiry: ${item.expiry}
+Quantity: ${item.quantity}`);
+    }
+}
 
-    alert("Medicine added successfully!");
+// Edit item
+function editItem(no) {
+    alert(`Edit feature will be implemented soon for item #${no}`);
+}
+
+// Delete item
+function deleteItem(no) {
+    if (confirm(`Delete item #${no}?`)) {
+        const index = inventory.findIndex(i => i.no === no);
+        if (index !== -1) {
+            inventory.splice(index, 1);
+            // Re-number items
+            inventory.forEach((item, idx) => { item.no = idx + 1; });
+            loadInventory();
+            alert('Item deleted successfully');
+        }
+    }
 }
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function () {
-    displaycurrentdate();
-    loadinventory();
-
-    document.getElementById('inventorySearch')?.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            searchinventory();
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    displayCurrentDate();
+    loadInventory();
+    
+    document.getElementById('inventorySearch')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') searchInventory();
     });
 });

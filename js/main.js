@@ -10,11 +10,17 @@ function toggleSidebar() {
 // Toggle submenus
 function toggleSubmenu(menuId) {
     const submenu = document.getElementById(menuId);
-    if (submenu) submenu.classList.toggle('show');
-}
-
-// Logout function
-function logout() {
-    sessionStorage.removeItem('currentUser');
-    window.location.href = 'login.html';
+    
+    // Close all other submenus first
+    const allSubmenus = document.querySelectorAll('.submenu');
+    allSubmenus.forEach(menu => {
+        if (menu.id !== menuId) {
+            menu.classList.remove('show');
+        }
+    });
+    
+    // Toggle the clicked submenu
+    if (submenu) {
+        submenu.classList.toggle('show');
+    }
 }

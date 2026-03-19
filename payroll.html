@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Payroll</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/payroll.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header (Fixed) -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack PH</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html">Medicines</a></li>
+                            <li><a href="inventory2.html">Vaccines</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                    <li><a href="users.html">Users</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li class="active"><a href="payroll.html">Payroll</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+            
+            <!-- Content Area - Only Table Scrolls (Same as Patients) -->
+            <div class="content-area">
+                <!-- Fixed Header Section -->
+                <div class="payroll-header">
+                    <h2 class="page-title">PAYROLL MANAGEMENT</h2>
+                    <button class="generate-payroll-btn" onclick="generatePayroll()">
+                        <span class="btn-icon">💰</span> Generate Monthly Payroll
+                    </button>
+                </div>
+                
+                <!-- Payroll Summary Cards -->
+                <div class="payroll-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">👥</div>
+                        <div class="summary-details">
+                            <div class="summary-label">Total Staff</div>
+                            <div class="summary-value" id="totalStaff">9</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">💰</div>
+                        <div class="summary-details">
+                            <div class="summary-label">Total Payroll</div>
+                            <div class="summary-value" id="totalPayroll">₱ 295,000</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">📅</div>
+                        <div class="summary-details">
+                            <div class="summary-label">Pay Period</div>
+                            <div class="summary-value" id="payPeriod">March 2026</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fixed Search/Sort Section -->
+                <div class="search-sort-container">
+                    <div class="search-box">
+                        <input type="text" id="payrollSearch" placeholder="Find by Name, Position, or Department...">
+                        <button onclick="searchPayroll()">🔍</button>
+                    </div>
+                    
+                    <div class="sort-box">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy" onchange="sortPayroll()">
+                            <option value="id">ID</option>
+                            <option value="name">Name</option>
+                            <option value="position">Position</option>
+                            <option value="base_salary">Base Salary</option>
+                            <option value="allowances">Allowances</option>
+                            <option value="deductions">Deductions</option>
+                            <option value="net_salary">Net Salary</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table Container - ONLY THIS SCROLLS -->
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="payroll-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Department</th>
+                                    <th>Base Salary</th>
+                                    <th>Allowances</th>
+                                    <th>Deductions</th>
+                                    <th>Net Salary</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payrollTableBody">
+                                <!-- Data will be loaded here via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Payroll Summary Footer -->
+                <div class="payroll-footer">
+                    <div class="payroll-totals">
+                        <div class="total-row">
+                            <span class="total-label">Total Base Salary:</span>
+                            <span class="total-amount" id="totalBase">₱ 295,000</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Total Allowances:</span>
+                            <span class="total-amount" id="totalAllowances">₱ 47,000</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Total Deductions:</span>
+                            <span class="total-amount" id="totalDeductions">₱ 32,100</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span class="total-label">NET PAYROLL:</span>
+                            <span class="total-amount" id="grandTotal">₱ 309,900</span>
+                        </div>
+                    </div>
+                    <div class="payroll-actions">
+                        <button class="export-btn pdf" onclick="exportPayrollPDF()">
+                            <span class="btn-icon">📄</span> Export PDF
+                        </button>
+                        <button class="export-btn excel" onclick="exportPayrollExcel()">
+                            <span class="btn-icon">📊</span> Export Excel
+                        </button>
+                        <button class="export-btn print" onclick="printPayroll()">
+                            <span class="btn-icon">🖨️</span> Print
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Fixed Footer -->
+                <div class="date-footer">
+                    Date today: <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payroll Details Modal -->
+    <div class="modal" id="payrollModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Payroll Details</h2>
+                <button class="close-modal" onclick="hidePayrollModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="payrollModalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hidePayrollModal()">Close</button>
+                <button class="save-btn" onclick="printPayslip()">Print Payslip</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/payroll.js"></script>
+</body>
+</html>
