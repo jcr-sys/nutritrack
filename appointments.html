@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack PH - Appointment Scheduling</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/appointments.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header (Fixed) -->
+        <div class="app-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                <h1>NutriTrack PH</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" placeholder="Search patients, records...">
+                <button class="search-btn">🔍</button>
+            </div>
+            
+            <div class="user-profile">
+                <span class="user-name" id="userName">Maria Santos</span>
+                <div class="avatar">👤</div>
+            </div>
+        </div>
+        
+        <!-- Main Content with Sidebar -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="patients.html">Patients</a></li>
+                    <li><a href="checkups.html?type=pregnancy">Pregnancy Checkups</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
+                        <ul class="submenu" id="historyMenu">
+                            <li><a href="history.html?type=medical">Medical History</a></li>
+                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="active"><a href="appointments.html">Appointment Scheduling</a></li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
+                        <ul class="submenu" id="recordsMenu">
+                            <li><a href="records.html?type=children">Children Records</a></li>
+                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="has-submenu">
+                        <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
+                        <ul class="submenu" id="inventoryMenu">
+                            <li><a href="inventory.html?type=medication">Medication Inventory</a></li>
+                            <li><a href="inventory.html?type=vaccine">Vaccine Inventory</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="immunizations.html">Child Immunizations</a></li>
+                    <li><a href="staff.html">Doctors / Nurses / Nutritionists</a></li>
+                </ul>
+                
+                <div class="sidebar-footer">
+                    <a href="login.html" class="logout-link">Logout</a>
+                </div>
+            </div>
+            
+            <!-- Content Area - Only Table Scrolls (Same as Patients) -->
+            <div class="content-area">
+                <!-- Fixed Header Section -->
+                <div class="appointments-header">
+                    <h2 class="page-title">APPOINTMENT SCHEDULING</h2>
+                    <button class="add-appointment-btn" onclick="showAddAppointmentModal()">+ New Appointment</button>
+                </div>
+                
+                <!-- Fixed Search/Sort Section (Identical to Patients) -->
+                <div class="search-sort-container">
+                    <div class="search-box">
+                        <input type="text" id="appointmentSearch" placeholder="Find by Patient ID, Purpose, or Status...">
+                        <button onclick="searchAppointments()">🔍</button>
+                    </div>
+                    
+                    <div class="sort-box">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy" onchange="sortAppointments()">
+                            <option value="appointment_id">Appointment ID</option>
+                            <option value="patient_id">Patient ID</option>
+                            <option value="appointment_date">Date</option>
+                            <option value="appointment_time">Time</option>
+                            <option value="purpose">Purpose</option>
+                            <option value="status">Status</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="appointments-table">
+                            <thead>
+                                <tr>
+                                    <th>Appointment ID</th>
+                                    <th>Patient ID</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentsTableBody">
+                                <!-- Data will be loaded here via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Fixed Footer -->
+                <div class="date-footer">
+                    Date today: <span id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Appointment Modal (Same style as Patients) -->
+    <div class="modal" id="addAppointmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule New Appointment</h2>
+                <button class="close-modal" onclick="hideAddAppointmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="patientId" required placeholder="e.g., 1002">
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Date *</label>
+                            <input type="date" id="appointmentDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Appointment Time *</label>
+                            <input type="time" id="appointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Purpose *</label>
+                            <select id="purpose" required>
+                                <option value="">Select Purpose</option>
+                                <option value="Prenatal Checkup">Prenatal Checkup</option>
+                                <option value="Child Immunization">Child Immunization</option>
+                                <option value="Senior Checkup">Senior Checkup</option>
+                                <option value="General Consultation">General Consultation</option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Nutrition Counseling">Nutrition Counseling</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select id="status" required>
+                                <option value="">Select Status</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="No Show">No Show</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="priority">
+                                <option value="Normal">Normal</option>
+                                <option value="Prenatal Priority">Prenatal Priority</option>
+                                <option value="Emergency">Emergency</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="remarks" rows="3" placeholder="Additional notes about the appointment..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideAddAppointmentModal()">Cancel</button>
+                <button class="save-btn" onclick="saveAppointment()">Schedule Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/appointments.js"></script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+/* ===== CHILD IMMUNIZATIONS PAGE SPECIFIC STYLES ===== */
+/* Following the exact same structure as patients.css */
+
+.content-area {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 70px); /* Full height minus header */
+    padding: 20px 30px;
+    overflow: hidden; /* Prevent content area scrolling */
+}
+
+.immunizations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.page-title {
+    margin-bottom: 0;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.add-immunization-btn {
+    background: #2B6896;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.add-immunization-btn:hover {
+    background: #1a4a6f;
+}
+
+.search-sort-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevent shrinking */
+    align-items: center;
+}
+
+.search-box {
+    flex: 2;
+    min-width: 250px;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 5px;
+    padding: 3px 12px;
+    box-shadow: 0 2px 5px rgba(43, 104, 150, 0.1);
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    padding: 8px 0;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-box button {
+    background: none;
+    border: none;
+    color: #2B6896;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.sort-box {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-box label {
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sort-box select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+    background: white;
+}
+
+/* Table Container - ONLY THIS SCROLLS */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(43, 104, 150, 0.1);
+    flex: 1; /* Takes remaining space */
+    min-height: 0; /* Important for flex child scrolling */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.table-wrapper {
+    overflow: auto; /* Both vertical and horizontal scrolling */
+    flex: 1;
+    border-radius: 0 0 10px 10px;
+}
+
+.immunizations-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px; /* Adjust based on number of columns */
+}
+
+.immunizations-table th {
+    background: #2B6896;
+    color: white;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.immunizations-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.immunizations-table tr:hover {
+    background: #f5f5f5;
+}
+
+/* Vaccine name mapping (for display) */
+.vaccine-name {
+    font-size: 11px;
+    color: #666;
+    display: block;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.edit-btn {
+    background: #2B6896;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.edit-btn:hover {
+    background: #1a4a6f;
+}
+
+.view-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.view-btn:hover {
+    background: #5a6268;
+}
+
+.delete-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-btn:hover {
+    background: #d32f2f;
+}
+
+.date-footer {
+    text-align: right;
+    color: #666;
+    font-size: 14px;
+    padding: 8px 0 0 0;
+    border-top: 1px solid #ddd;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Modal styles (identical to patients.css) */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2B6896;
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.save-btn {
+    background: #2B6896;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.save-btn:hover {
+    background: #1a4a6f;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.cancel-btn:hover {
+    background: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-sort-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box, .sort-box {
+        width: 100%;
+    }
+}

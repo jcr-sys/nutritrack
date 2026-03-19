@@ -238,9 +238,9 @@ body {
 
 .page-title {
     color: #2B6896;
-    font-size: 24px;
+    font-size: 40px;
     margin-bottom: 25px;
-    font-weight: 600;
+    font-weight: bold;
 }
 
 /* ===== STATS CARDS WITH CUSTOM ICONS ===== */
