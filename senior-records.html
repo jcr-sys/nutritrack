@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Dashboard</title>
+    <title>NutriTrack PH - Senior Records</title>
     <link rel="stylesheet" href="css/dashboard.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
+    <link rel="stylesheet" href="css/senior-records.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
+        <!-- Header (Fixed) -->
         <div class="app-header">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
@@ -43,8 +42,8 @@
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
                         <ul class="submenu" id="historyMenu">
-                            <li><a href="history.html?type=medical">Medical History</a></li>
-                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                            <li><a href="medical-history.html">Medical History</a></li>
+                            <li><a href="pregnancy-history.html">Pregnancy History</a></li>
                         </ul>
                     </li>
                     
@@ -52,9 +51,9 @@
                     
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
-                        <ul class="submenu" id="recordsMenu">
-                            <li><a href="records.html?type=children">Children Records</a></li>
-                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        <ul class="submenu show" id="recordsMenu">
+                            <li><a href="children-records.html">Children Records</a></li>
+                            <li class="active"><a href="senior-records.html">Senior Records</a></li>
                         </ul>
                     </li>
                     
@@ -69,90 +68,161 @@
                     <li><a href="immunizations.html">Child Immunizations</a></li>
                     <li><a href="staff.html">Staff</a></li>
                     <li><a href="users.html">Users</a></li>
-                    <li><a href="payroll.html">Reports</a></li>
                     <li><a href="reports.html">Reports</a></li>
+                    <li><a href="payroll.html">Payroll</a></li>
                 </ul>
                 
                 <div class="sidebar-footer">
                     <a href="login.html" class="logout-link">Logout</a>
                 </div>
             </div>
-
-<div class="content-area">
-    <div class="page-header-actions">
-        <div class="table-title-area">
-            <h2>Senior Records</h2>
-        </div>
-        <div class="action-buttons">
-            <button class="icon-btn active">☰</button>
-            <button class="icon-btn">⊞</button>
-            <button class="add-btn">+ Add Record</button>
+            
+            <!-- Content Area - Only Table Scrolls -->
+            <div class="content-area">
+                <!-- Fixed Header Section -->
+                <div class="records-header">
+                    <h2 class="page-title">SENIOR RECORDS</h2>
+                    <button class="add-record-btn" onclick="showAddRecordModal()">+ Add Record</button>
+                </div>
+                
+                <!-- Fixed Search/Sort Section -->
+                <div class="search-sort-container">
+                    <div class="search-box">
+                        <input type="text" id="recordSearch" placeholder="Find by Patient ID, Medication, or Emergency Contact...">
+                        <button onclick="searchRecords()">🔍</button>
+                    </div>
+                    
+                    <div class="sort-box">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy" onchange="sortRecords()">
+                            <option value="patient_id">Patient ID</option>
+                            <option value="vision_status">Vision Status</option>
+                            <option value="hearing_status">Hearing Status</option>
+                            <option value="emergency_contact_name">Emergency Contact</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table Container - ONLY THIS SCROLLS -->
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Doctor ID</th>
+                                    <th>Medicine ID</th>
+                                    <th>Medication History</th>
+                                    <th>Physical Activity</th>
+                                    <th>Vision Status</th>
+                                    <th>Hearing Status</th>
+                                    <th>Emergency Contact Name</th>
+                                    <th>Emergency Contact Number</th>
+                                    <th>Remarks</th>
+                                    <th>Actions</th>
+                                </thead>
+                            <tbody id="recordsTableBody">
+                                <!-- Data will be loaded here via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Fixed Footer -->
+                <div class="date-footer">
+                    Date today: <span id="currentDate"></span>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="table-container">
-        <div class="table-controls">
-            <div class="filters-left">
-                <input type="text" class="control-input" placeholder="🔍 Search..">
-                <select class="control-input">
-                    <option>Sort by: Patient ID</option>
-                </select>
-                <button class="icon-btn">Y</button>
-                <button class="icon-btn">✎</button>
+
+    <!-- Add Senior Record Modal -->
+    <div class="modal" id="addRecordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Senior Record</h2>
+                <button class="close-modal" onclick="hideAddRecordModal()">&times;</button>
             </div>
-            <div class="pagination-right">
-                <span>Page 1</span>
-                <button class="page-btn">❮</button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">❯</button>
-                <span>Page 2</span>
+            <div class="modal-body">
+                <form id="recordForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="patientId" required placeholder="e.g., 1001">
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor ID *</label>
+                            <input type="text" id="doctorId" required placeholder="e.g., 1">
+                        </div>
+                        <div class="form-group">
+                            <label>Medicine ID</label>
+                            <input type="text" id="medicineId" placeholder="e.g., 202">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Medication History</label>
+                            <textarea id="medicationHistory" rows="3" placeholder="e.g., Hypertension Maintenance History"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Physical Activity</label>
+                            <input type="text" id="physicalActivity" placeholder="e.g., Walking, Yoga, None">
+                        </div>
+                        <div class="form-group">
+                            <label>Vision Status</label>
+                            <select id="visionStatus">
+                                <option value="">Select Vision Status</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Blurred">Blurred</option>
+                                <option value="Impaired">Impaired</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hearing Status</label>
+                            <select id="hearingStatus">
+                                <option value="">Select Hearing Status</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Mild hearing loss">Mild hearing loss</option>
+                                <option value="Moderate hearing loss">Moderate hearing loss</option>
+                                <option value="Severe hearing loss">Severe hearing loss</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Emergency Contact Name</label>
+                            <input type="text" id="emergencyContactName" placeholder="e.g., Geri Louise Hernia">
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact Number</label>
+                            <input type="text" id="emergencyContactNumber" placeholder="e.g., 09760908363">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="remarks" rows="3" placeholder="e.g., Take after meals"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideAddRecordModal()">Cancel</button>
+                <button class="save-btn" onclick="saveRecord()">Save Record</button>
             </div>
         </div>
-
-        <table class="patient-table">
-            <thead>
-                <tr>
-                    <th>Senior Record ID</th>
-                    <th>Patient ID</th>
-                    <th>Medicine ID</th>
-                    <th>Medication History</th>
-                    <th>Physical Activity</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>1</td>
-                    <td>1</td>
-                    <td>Taking Losartan for 2 years</td>
-                    <td>Light Walking</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>10</td>
-                    <td>2</td>
-                    <td>On Metformin since 2022</td>
-                    <td>Yoga</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>12</td>
-                    <td>4</td>
-                    <td>Started Simvastatin 6 months ago</td>
-                    <td>None</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>22</td>
-                    <td>6</td>
-                    <td>Calcium meds taken every morning</td>
-                    <td>Brisk Walking</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
-</div>
 
-<script src="js/dashboard.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/senior-records.js"></script>
 </body>
 </html>

@@ -5,8 +5,8 @@ let inventory = [
     {
         no: 1,
         name: "BCG Vaccine",
-        description: "Tuberculosis vaccine",
-        dosage: "0.05mL",
+        description: "Tuberculosis vaccine given at birth",
+        dosage: "0.05 mL",
         form: "Injection",
         expiry: "2026-08-10",
         quantity: 120
@@ -14,8 +14,8 @@ let inventory = [
     {
         no: 2,
         name: "Hepatitis B Vaccine",
-        description: "Protects against Hepatitis B",
-        dosage: "0.5mL",
+        description: "Protects against Hepatitis B virus",
+        dosage: "0.5 mL",
         form: "Injection",
         expiry: "2026-05-15",
         quantity: 80
@@ -24,7 +24,7 @@ let inventory = [
         no: 3,
         name: "DPT Vaccine",
         description: "Diphtheria, Tetanus, Pertussis",
-        dosage: "0.5mL",
+        dosage: "0.5 mL",
         form: "Injection",
         expiry: "2026-12-20",
         quantity: 95
@@ -42,7 +42,7 @@ let inventory = [
         no: 5,
         name: "IPV Vaccine",
         description: "Inactivated Polio Vaccine",
-        dosage: "0.5mL",
+        dosage: "0.5 mL",
         form: "Injection",
         expiry: "2026-09-30",
         quantity: 70
@@ -51,7 +51,7 @@ let inventory = [
         no: 6,
         name: "MMR Vaccine",
         description: "Measles, Mumps, Rubella",
-        dosage: "0.5mL",
+        dosage: "0.5 mL",
         form: "Injection",
         expiry: "2026-11-01",
         quantity: 150
@@ -59,8 +59,8 @@ let inventory = [
     {
         no: 7,
         name: "Rotavirus Vaccine",
-        description: "Protects against rotavirus",
-        dosage: "1.5mL",
+        description: "Protects against rotavirus infection",
+        dosage: "1.5 mL",
         form: "Oral",
         expiry: "2026-07-20",
         quantity: 60
@@ -69,10 +69,28 @@ let inventory = [
         no: 8,
         name: "Influenza Vaccine",
         description: "Seasonal flu protection",
-        dosage: "0.5mL",
+        dosage: "0.5 mL",
         form: "Injection",
         expiry: "2026-10-15",
+        quantity: 45
+    },
+    {
+        no: 9,
+        name: "HPV Vaccine",
+        description: "Human Papillomavirus vaccine",
+        dosage: "0.5 mL",
+        form: "Injection",
+        expiry: "2027-01-30",
         quantity: 90
+    },
+    {
+        no: 10,
+        name: "Pneumococcal Vaccine",
+        description: "Protects against pneumonia",
+        dosage: "0.5 mL",
+        form: "Injection",
+        expiry: "2026-06-25",
+        quantity: 55
     }
 ];
 
@@ -96,20 +114,20 @@ function loadInventory() {
     inventory.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${item.no}</td>
-            <td>${item.name}</td>
-            <td>${item.description || '-'}</td>
-            <td>${item.dosage}</td>
-            <td>${item.form}</td>
-            <td>${item.expiry}</td>
-            <td>${item.quantity}</td>
-            <td>
+             <td>${item.no}</td>
+             <td><strong>${item.name}</strong></td>
+             <td>${item.description || '-'}</td>
+             <td>${item.dosage}</td>
+             <td>${item.form}</td>
+             <td>${item.expiry}</td>
+             <td>${item.quantity}</td>
+             <td>
                 <div class="action-buttons">
                     <button class="view-btn" onclick="viewItem(${item.no})">View</button>
                     <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
                     <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
                 </div>
-            </td>
+             </td>
         `;
         tableBody.appendChild(row);
     });
@@ -152,20 +170,20 @@ function displayFilteredInventory(list) {
     list.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${item.no}</td>
-            <td>${item.name}</td>
-            <td>${item.description || '-'}</td>
-            <td>${item.dosage}</td>
-            <td>${item.form}</td>
-            <td>${item.expiry}</td>
-            <td>${item.quantity}</td>
-            <td>
+             <td>${item.no}</td>
+             <td><strong>${item.name}</strong></td>
+             <td>${item.description || '-'}</td>
+             <td>${item.dosage}</td>
+             <td>${item.form}</td>
+             <td>${item.expiry}</td>
+             <td>${item.quantity}</td>
+             <td>
                 <div class="action-buttons">
                     <button class="view-btn" onclick="viewItem(${item.no})">View</button>
                     <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
                     <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
                 </div>
-            </td>
+             </td>
         `;
         tableBody.appendChild(row);
     });

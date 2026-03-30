@@ -115,7 +115,7 @@ function loadInventory() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${item.no}</td>
-            <td>${item.name}</td>
+            <td><strong>${item.name}</strong></td>
             <td>${item.description || '-'}</td>
             <td>${item.dosage}</td>
             <td>${item.form}</td>
@@ -171,7 +171,7 @@ function displayFilteredInventory(list) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${item.no}</td>
-            <td>${item.name}</td>
+            <td><strong>${item.name}</strong></td>
             <td>${item.description || '-'}</td>
             <td>${item.dosage}</td>
             <td>${item.form}</td>

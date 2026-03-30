@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Dashboard</title>
+    <title>NutriTrack PH - Children Records</title>
     <link rel="stylesheet" href="css/dashboard.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
+    <link rel="stylesheet" href="css/children-records.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
+        <!-- Header (Fixed) -->
         <div class="app-header">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
@@ -43,8 +42,8 @@
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
                         <ul class="submenu" id="historyMenu">
-                            <li><a href="history.html?type=medical">Medical History</a></li>
-                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                            <li><a href="medical-history.html">Medical History</a></li>
+                            <li><a href="pregnancy-history.html">Pregnancy History</a></li>
                         </ul>
                     </li>
                     
@@ -52,9 +51,9 @@
                     
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
-                        <ul class="submenu" id="recordsMenu">
-                            <li><a href="records.html?type=children">Children Records</a></li>
-                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                        <ul class="submenu show" id="recordsMenu">
+                            <li class="active"><a href="children-records.html">Children Records</a></li>
+                            <li><a href="senior-records.html">Senior Records</a></li>
                         </ul>
                     </li>
                     
@@ -69,95 +68,146 @@
                     <li><a href="immunizations.html">Child Immunizations</a></li>
                     <li><a href="staff.html">Staff</a></li>
                     <li><a href="users.html">Users</a></li>
-                    <li><a href="payroll.html">Reports</a></li>
                     <li><a href="reports.html">Reports</a></li>
+                    <li><a href="payroll.html">Payroll</a></li>
                 </ul>
                 
                 <div class="sidebar-footer">
                     <a href="login.html" class="logout-link">Logout</a>
                 </div>
             </div>
-
-<div class="content-area">
-    <div class="page-header-actions">
-        <div class="table-title-area">
-            <h2>Children Records</h2>
-        </div>
-        <div class="action-buttons">
-            <button class="icon-btn active">☰</button>
-            <button class="icon-btn">⊞</button>
-            <button class="add-btn">+ Add Record</button>
+            
+            <!-- Content Area - Only Table Scrolls -->
+            <div class="content-area">
+                <!-- Fixed Header Section -->
+                <div class="records-header">
+                    <h2 class="page-title">CHILDREN RECORDS</h2>
+                    <button class="add-record-btn" onclick="showAddRecordModal()">+ Add Record</button>
+                </div>
+                
+                <!-- Fixed Search/Sort Section -->
+                <div class="search-sort-container">
+                    <div class="search-box">
+                        <input type="text" id="recordSearch" placeholder="Find by Patient ID, Mother Name, or Guardian...">
+                        <button onclick="searchRecords()">🔍</button>
+                    </div>
+                    
+                    <div class="sort-box">
+                        <label for="sortBy">Sort by:</label>
+                        <select id="sortBy" onchange="sortRecords()">
+                            <option value="patient_id">Patient ID</option>
+                            <option value="mother_name">Mother Name</option>
+                            <option value="father_name">Father Name</option>
+                            <option value="birth_weight">Birth Weight</option>
+                            <option value="birth_height">Birth Height</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Table Container - ONLY THIS SCROLLS -->
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Mother Name</th>
+                                    <th>Father Name</th>
+                                    <th>Birth Weight (kg)</th>
+                                    <th>Birth Height (cm)</th>
+                                    <th>Birth Place</th>
+                                    <th>Guardian</th>
+                                    <th>Guardian Contact</th>
+                                    <th>Relationship to Guardian</th>
+                                    <th>Remarks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsTableBody">
+                                <!-- Data will be loaded here via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Fixed Footer -->
+                <div class="date-footer">
+                    Date today: <span id="currentDate"></span>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <div class="table-container">
-        <div class="table-controls">
-            <div class="filters-left">
-                <input type="text" class="control-input" placeholder="🔍 Search..">
-                <select class="control-input">
-                    <option>Sort by: Patient ID</option>
-                </select>
-                <button class="icon-btn">Y</button>
-                <button class="icon-btn">✎</button>
+
+    <!-- Add Children Record Modal -->
+    <div class="modal" id="addRecordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Children Record</h2>
+                <button class="close-modal" onclick="hideAddRecordModal()">&times;</button>
             </div>
-            <div class="pagination-right">
-                <span>Page 1</span>
-                <button class="page-btn">❮</button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">❯</button>
-                <span>Page 2</span>
+            <div class="modal-body">
+                <form id="recordForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="patientId" required placeholder="e.g., 1011">
+                        </div>
+                        <div class="form-group">
+                            <label>Mother Name *</label>
+                            <input type="text" id="motherName" required placeholder="e.g., Maria Dela Cruz">
+                        </div>
+                        <div class="form-group">
+                            <label>Father Name</label>
+                            <input type="text" id="fatherName" placeholder="e.g., Juan Dela Cruz">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Birth Weight (kg) *</label>
+                            <input type="number" id="birthWeight" step="0.01" min="0" required placeholder="e.g., 3.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Birth Height (cm) *</label>
+                            <input type="number" id="birthHeight" step="0.1" min="0" required placeholder="e.g., 50.0">
+                        </div>
+                        <div class="form-group">
+                            <label>Birth Place *</label>
+                            <input type="text" id="birthPlace" required placeholder="e.g., Quezon City">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Guardian Name</label>
+                            <input type="text" id="guardian" placeholder="e.g., Lina Dela Cruz">
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Contact Number</label>
+                            <input type="text" id="guardianContact" placeholder="e.g., 09766343115">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship to Guardian</label>
+                            <input type="text" id="relationship" placeholder="e.g., Aunt">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="remarks" rows="3" placeholder="e.g., No adverse reactions"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideAddRecordModal()">Cancel</button>
+                <button class="save-btn" onclick="saveRecord()">Save Record</button>
             </div>
         </div>
-
-        <table class="patient-table">
-            <thead>
-                <tr>
-                    <th>Children Record ID</th>
-                    <th>Patient ID</th>
-                    <th>Mother Name</th>
-                    <th>Father Name</th>
-                    <th>Birth Weight</th>
-                    <th>Birth Height</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>Laura Gayundato</td>
-                    <td>Fred Gayundato</td>
-                    <td>10kg</td>
-                    <td>78cm</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>13</td>
-                    <td>Michaela Jacobs</td>
-                    <td>Rick Jacobs</td>
-                    <td>22.45kg</td>
-                    <td>122cm</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>14</td>
-                    <td>Josie Rentoy</td>
-                    <td>Roderick Rentoy</td>
-                    <td>23.5kg</td>
-                    <td>128cm</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>15</td>
-                    <td>Marie Bautista</td>
-                    <td>Mario Bautista</td>
-                    <td>22.4kg</td>
-                    <td>122cm</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
-</div>
 
-<script src="js/dashboard.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/children-records.js"></script>
 </body>
 </html>

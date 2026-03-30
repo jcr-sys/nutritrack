@@ -13,7 +13,7 @@
         <div class="app-header">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-                <h1>NutriTrack</h1>
+                <h1>NutriTrack PH</h1>
             </div>
             
             <div class="search-container">
@@ -42,8 +42,8 @@
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('historyMenu')">Patient History ▼</a>
                         <ul class="submenu" id="historyMenu">
-                            <li><a href="history.html?type=medical">Medical History</a></li>
-                            <li><a href="history.html?type=pregnancy">Pregnancy History</a></li>
+                            <li><a href="medical-history.html">Medical History</a></li>
+                            <li><a href="pregnancy-history.html">Pregnancy History</a></li>
                         </ul>
                     </li>
                     
@@ -52,14 +52,14 @@
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('recordsMenu')">Records ▼</a>
                         <ul class="submenu" id="recordsMenu">
-                            <li><a href="records.html?type=children">Children Records</a></li>
-                            <li><a href="records.html?type=senior">Senior Records</a></li>
+                            <li><a href="children-records.html">Children Records</a></li>
+                            <li><a href="senior-records.html">Senior Records</a></li>
                         </ul>
                     </li>
                     
                     <li class="has-submenu">
                         <a href="#" onclick="toggleSubmenu('inventoryMenu')">Inventory ▼</a>
-                        <ul class="submenu" id="inventoryMenu">
+                        <ul class="submenu show" id="inventoryMenu">
                             <li><a href="inventory.html">Medicines</a></li>
                             <li class="active"><a href="inventory2.html">Vaccines</a></li>
                         </ul>
@@ -114,12 +114,11 @@
                                     <th>Expiry Date</th>
                                     <th>Quantity</th>
                                     <th>Actions</th>
-                                </tr>
-                            </thead>
+                                </thead>
                             <tbody id="inventoryTableBody">
                                 <!-- Vaccine data will be loaded via JS -->
                             </tbody>
-                        </table>
+                         </table>
                     </div>
                 </div>
 
