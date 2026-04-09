@@ -1,3 +1,4 @@
+<!-- checkups.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,13 @@
     <title>NutriTrack PH - Pregnancy Checkups</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/checkups.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +30,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -104,14 +112,16 @@
                     </div>
                 </div>
                 
-                <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
+                <!-- Table Container -->
                 <div class="table-container">
                     <div class="table-wrapper">
                         <table class="checkups-table">
                             <thead>
                                 <tr>
                                     <th>Patient ID</th>
+                                    <th>Patient Name</th>
                                     <th>Doctor ID</th>
+                                    <th>Doctor Name</th>
                                     <th>Checkup Date</th>
                                     <th>Trimester</th>
                                     <th>Gestational Age</th>
@@ -121,6 +131,7 @@
                                     <th>Blood Test Result</th>
                                     <th>Doctor Notes</th>
                                     <th>Next Checkup Date</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -130,7 +141,7 @@
                         </table>
                     </div>
                 </div>
-                
+                                
                 <!-- Fixed Footer -->
                 <div class="date-footer">
                     Date today: <span id="currentDate"></span>
@@ -139,7 +150,7 @@
         </div>
     </div>
 
-    <!-- Add Checkup Modal (Same style as Patients) -->
+    <!-- Add Checkup Modal (Updated Doctor Section) -->
     <div class="modal" id="addCheckupModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -151,11 +162,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Patient ID *</label>
-                            <input type="text" id="patientId" required placeholder="e.g., 1002">
+                            <select id="patientId" required onchange="updatePatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
                         </div>
                         <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="patientNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Patient name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Doctor ID *</label>
-                            <input type="text" id="doctorId" required placeholder="e.g., 3">
+                            <select id="doctorId" required onchange="updateDoctorNameDisplay()">
+                                <option value="">Select Doctor ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
                         </div>
                     </div>
                     

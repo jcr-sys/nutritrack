@@ -1,3 +1,4 @@
+<!-- reports.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
     <!-- HTML to Canvas for better PDF rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
 </head>
 <body>
     <div class="app-container">
@@ -27,7 +37,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -175,7 +185,7 @@
                         <div class="signature-section">
                             <div class="signature-line">
                                 <span class="signature-label">Prepared by:</span>
-                                <span class="signature-name" id="preparedBy">Maria Santos, BNS Worker</span>
+                                <span class="signature-name" id="preparedBy">Nathaniel Ambrosio, BNS Worker</span>
                             </div>
                             <div class="signature-line">
                                 <span class="signature-label">Date:</span>
@@ -185,7 +195,7 @@
                         <div class="signature-section">
                             <div class="signature-line">
                                 <span class="signature-label">Noted by:</span>
-                                <span class="signature-name" id="notedBy">Dr. Juan Reyes, Municipal Health Officer</span>
+                                <span class="signature-name" id="notedBy">Dr. Geri Louise Hernia, Municipal Health Officer</span>
                             </div>
                         </div>
                     </div>

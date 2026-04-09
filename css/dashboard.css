@@ -1,3 +1,4 @@
+/* dashboard.css */
 /* ===== RESET & BASE STYLES ===== */
 * {
     margin: 0;
@@ -32,6 +33,73 @@ body {
     z-index: 1000;
     border-bottom: 3px solid #2B6896;
     height: 70px;
+}
+
+/* Additional Calendar Styles */
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.day {
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.day:hover {
+    background: #f0f4ff;
+    color: #2B6896;
+}
+
+.day.today {
+    background: #2B6896;
+    color: white;
+    font-weight: bold;
+}
+
+.day.other-month {
+    color: #ccc;
+}
+
+/* Calendar Events */
+.calendar-events {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: auto;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.event-item {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 5px;
+    padding-left: 10px;
+}
+
+/* Make sure chart container handles empty state */
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(43, 104, 150, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.pie-chart-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+    padding: 10px;
 }
 
 .header-left {

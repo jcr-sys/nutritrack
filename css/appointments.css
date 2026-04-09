@@ -1,3 +1,4 @@
+/* appointment.css */
 /* ===== APPOINTMENT SCHEDULING PAGE SPECIFIC STYLES ===== */
 /* Following the exact same structure as patients.css */
 
@@ -36,6 +37,43 @@
     align-items: center;
     gap: 5px;
     white-space: nowrap;
+}
+
+/* Status update button styles */
+.status-update-btn {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.status-update-btn:hover {
+    background: #f57c00;
+}
+
+/* Status update button styles */
+.status-update-btn {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.status-update-btn:hover {
+    background: #f57c00;
+}
+
+/* Status options for dropdown in modal */
+.status-option {
+    cursor: pointer;
 }
 
 .add-appointment-btn:hover {

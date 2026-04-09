@@ -1,3 +1,4 @@
+<!-- medical-history.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,13 @@
     <title>NutriTrack PH - Medical History</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/medical-history.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +30,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -111,7 +119,9 @@
                             <thead>
                                 <tr>
                                     <th>Patient ID</th>
+                                    <th>Patient Name</th>
                                     <th>Doctor ID</th>
+                                    <th>Doctor Name</th>
                                     <th>Condition</th>
                                     <th>Diagnosis Date</th>
                                     <th>Status</th>
@@ -147,11 +157,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Patient ID *</label>
-                            <input type="text" id="patientId" required placeholder="e.g., 1001">
+                            <select id="patientId" required onchange="updatePatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
                         </div>
                         <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="patientNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Patient name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Doctor ID *</label>
-                            <input type="text" id="doctorId" required placeholder="e.g., 1">
+                            <select id="doctorId" required onchange="updateDoctorNameDisplay()">
+                                <option value="">Select Doctor ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
                         </div>
                     </div>
                     

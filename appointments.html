@@ -1,3 +1,4 @@
+<!-- appointments.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,15 @@
     <title>NutriTrack PH - Appointment Scheduling</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/appointments.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+
+    <!-- Your Firebase Config -->
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +32,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -105,6 +115,37 @@
                     </div>
                 </div>
                 
+                <!-- Status Update Modal -->
+                <div class="modal" id="statusModal">
+                    <div class="modal-content" style="max-width: 400px;">
+                        <div class="modal-header">
+                            <h2>Update Appointment Status</h2>
+                            <button class="close-modal" onclick="closeStatusModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Current Status</label>
+                                <input type="text" id="currentStatusDisplay" readonly style="background-color: #f0f0f0;">
+                            </div>
+                            <div class="form-group">
+                                <label>New Status *</label>
+                                <select id="newStatusSelect" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Scheduled">Scheduled</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="No Show">No Show</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
+                            <button class="save-btn" onclick="confirmStatusUpdate()">Update Status</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
                 <div class="table-container">
                     <div class="table-wrapper">
@@ -113,6 +154,7 @@
                                 <tr>
                                     <th>Appointment ID</th>
                                     <th>Patient ID</th>
+                                    <th>Patient Name</th>
                                     <th>Date</th>
                                     <th>Time</th>
                                     <th>Purpose</th>
@@ -148,7 +190,13 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Patient ID *</label>
-                            <input type="text" id="patientId" required placeholder="e.g., 1002">
+                            <select id="patientId" required onchange="updatePatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="patientNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Patient name will appear here">
                         </div>
                         <div class="form-group">
                             <label>Appointment Date *</label>

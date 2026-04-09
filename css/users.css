@@ -1,3 +1,4 @@
+/* users.css */
 /* ===== USER MAINTENANCE PAGE SPECIFIC STYLES ===== */
 /* Following the exact same structure as patients.css */
 
@@ -84,6 +85,24 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Dropdown styling */
+select {
+    cursor: pointer;
+    background-color: white;
+}
+
+select option {
+    padding: 8px;
+}
+
+/* Form row adjustment for better spacing */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
 .sort-box label {

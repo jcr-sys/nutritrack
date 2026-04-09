@@ -1,98 +1,7 @@
-// ===== VACCINES INVENTORY PAGE FUNCTIONALITY =====
+// inventory2.js
+// ===== VACCINES INVENTORY PAGE WITH FIREBASE =====
 
-// Sample vaccine inventory data
-let inventory = [
-    {
-        no: 1,
-        name: "BCG Vaccine",
-        description: "Tuberculosis vaccine given at birth",
-        dosage: "0.05 mL",
-        form: "Injection",
-        expiry: "2026-08-10",
-        quantity: 120
-    },
-    {
-        no: 2,
-        name: "Hepatitis B Vaccine",
-        description: "Protects against Hepatitis B virus",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-05-15",
-        quantity: 80
-    },
-    {
-        no: 3,
-        name: "DPT Vaccine",
-        description: "Diphtheria, Tetanus, Pertussis",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-12-20",
-        quantity: 95
-    },
-    {
-        no: 4,
-        name: "Oral Polio Vaccine",
-        description: "Protects against Polio",
-        dosage: "2 drops",
-        form: "Oral",
-        expiry: "2027-03-10",
-        quantity: 200
-    },
-    {
-        no: 5,
-        name: "IPV Vaccine",
-        description: "Inactivated Polio Vaccine",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-09-30",
-        quantity: 70
-    },
-    {
-        no: 6,
-        name: "MMR Vaccine",
-        description: "Measles, Mumps, Rubella",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-11-01",
-        quantity: 150
-    },
-    {
-        no: 7,
-        name: "Rotavirus Vaccine",
-        description: "Protects against rotavirus infection",
-        dosage: "1.5 mL",
-        form: "Oral",
-        expiry: "2026-07-20",
-        quantity: 60
-    },
-    {
-        no: 8,
-        name: "Influenza Vaccine",
-        description: "Seasonal flu protection",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-10-15",
-        quantity: 45
-    },
-    {
-        no: 9,
-        name: "HPV Vaccine",
-        description: "Human Papillomavirus vaccine",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2027-01-30",
-        quantity: 90
-    },
-    {
-        no: 10,
-        name: "Pneumococcal Vaccine",
-        description: "Protects against pneumonia",
-        dosage: "0.5 mL",
-        form: "Injection",
-        expiry: "2026-06-25",
-        quantity: 55
-    }
-];
+let allVaccines = [];
 
 // Display current date
 function displayCurrentDate() {
@@ -104,43 +13,70 @@ function displayCurrentDate() {
     }
 }
 
-// Load inventory into table
-function loadInventory() {
+// Load vaccines from Firestore
+async function loadInventory() {
     const tableBody = document.getElementById('inventoryTableBody');
     if (!tableBody) return;
 
-    tableBody.innerHTML = '';
+    tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Loading vaccines...<\/div>';
 
-    inventory.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-             <td>${item.no}</td>
-             <td><strong>${item.name}</strong></td>
-             <td>${item.description || '-'}</td>
-             <td>${item.dosage}</td>
-             <td>${item.form}</td>
-             <td>${item.expiry}</td>
-             <td>${item.quantity}</td>
-             <td>
-                <div class="action-buttons">
-                    <button class="view-btn" onclick="viewItem(${item.no})">View</button>
-                    <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
-                    <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
-                </div>
-             </td>
-        `;
-        tableBody.appendChild(row);
-    });
+    try {
+        const snapshot = await db.collection('vaccines_inventory').orderBy('no').get();
+
+        if (snapshot.empty) {
+            tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No vaccines found. Click "+ Add Vaccine" to add.<\/div>';
+            allVaccines = [];
+            return;
+        }
+
+        allVaccines = [];
+        tableBody.innerHTML = '';
+
+        snapshot.forEach(doc => {
+            const item = doc.data();
+            allVaccines.push(item);
+
+            // Stock color coding
+            let quantityColor = '#2e7d32'; // Green for good stock
+            if (item.quantity <= 5) {
+                quantityColor = '#f44336'; // Red for critical stock
+            } else if (item.quantity <= 10) {
+                quantityColor = '#ff9800'; // Orange for low stock
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.no || '-'}<\/div>
+                <td><strong>${item.name || '-'}</strong><\/div>
+                <td>${item.description || '-'}<\/div>
+                <td>${item.dosage || '-'}<\/div>
+                <td>${item.form || '-'}<\/div>
+                <td>${item.expiry || '-'}<\/div>
+                <td style="color: ${quantityColor}; font-weight: bold;">${item.quantity || 0}<\/div>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" onclick="viewItem('${item.doc_id}')">View</button>
+                        <button class="edit-btn" onclick="editItem('${item.doc_id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteItem('${item.doc_id}')">Delete</button>
+                    </div>
+                <\/div>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading vaccines:", error);
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Error loading data. Please check your connection.<\/div>';
+    }
 }
 
 // Search inventory
 function searchInventory() {
     const searchTerm = document.getElementById('inventorySearch')?.value.toLowerCase() || '';
-    const filtered = inventory.filter(item =>
-        item.name.toLowerCase().includes(searchTerm) ||
-        (item.description || '').toLowerCase().includes(searchTerm) ||
-        item.form.toLowerCase().includes(searchTerm) ||
-        item.dosage.toLowerCase().includes(searchTerm)
+    const filtered = allVaccines.filter(item =>
+        (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+        (item.description && item.description.toLowerCase().includes(searchTerm)) ||
+        (item.form && item.form.toLowerCase().includes(searchTerm)) ||
+        (item.dosage && item.dosage.toLowerCase().includes(searchTerm))
     );
     displayFilteredInventory(filtered);
 }
@@ -148,16 +84,16 @@ function searchInventory() {
 // Sort inventory
 function sortInventory() {
     const sortBy = document.getElementById('sortBy').value;
-    const sorted = [...inventory].sort((a, b) => {
+    const sorted = [...allVaccines].sort((a, b) => {
         let valA = a[sortBy];
         let valB = b[sortBy];
         if (sortBy === 'no' || sortBy === 'quantity') {
-            return valA - valB;
+            return (valA || 0) - (valB || 0);
         }
         if (sortBy === 'expiry') {
             return new Date(valA) - new Date(valB);
         }
-        return String(valA).localeCompare(String(valB));
+        return String(valA || '').localeCompare(String(valB || ''));
     });
     displayFilteredInventory(sorted);
 }
@@ -168,25 +104,47 @@ function displayFilteredInventory(list) {
     if (!tableBody) return;
     tableBody.innerHTML = '';
     list.forEach(item => {
+        let quantityColor = '#2e7d32';
+        if (item.quantity <= 5) {
+            quantityColor = '#f44336';
+        } else if (item.quantity <= 10) {
+            quantityColor = '#ff9800';
+        }
+        
         const row = document.createElement('tr');
         row.innerHTML = `
-             <td>${item.no}</td>
-             <td><strong>${item.name}</strong></td>
-             <td>${item.description || '-'}</td>
-             <td>${item.dosage}</td>
-             <td>${item.form}</td>
-             <td>${item.expiry}</td>
-             <td>${item.quantity}</td>
-             <td>
+            <td>${item.no || '-'}<\/div>
+            <td><strong>${item.name || '-'}</strong><\/div>
+            <td>${item.description || '-'}<\/div>
+            <td>${item.dosage || '-'}<\/div>
+            <td>${item.form || '-'}<\/div>
+            <td>${item.expiry || '-'}<\/div>
+            <td style="color: ${quantityColor}; font-weight: bold;">${item.quantity || 0}<\/div>
+            <td>
                 <div class="action-buttons">
-                    <button class="view-btn" onclick="viewItem(${item.no})">View</button>
-                    <button class="edit-btn" onclick="editItem(${item.no})">Edit</button>
-                    <button class="delete-btn" onclick="deleteItem(${item.no})">Delete</button>
+                    <button class="view-btn" onclick="viewItem('${item.doc_id}')">View</button>
+                    <button class="edit-btn" onclick="editItem('${item.doc_id}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteItem('${item.doc_id}')">Delete</button>
                 </div>
-             </td>
+            <\/div>
         `;
         tableBody.appendChild(row);
     });
+}
+
+// Get next sequential number
+async function getNextNumber() {
+    try {
+        const snapshot = await db.collection('vaccines_inventory').orderBy('no', 'desc').limit(1).get();
+        if (snapshot.empty) {
+            return 1;
+        }
+        const lastItem = snapshot.docs[0].data();
+        return (lastItem.no || 0) + 1;
+    } catch (error) {
+        console.error("Error getting next number:", error);
+        return allVaccines.length + 1;
+    }
 }
 
 // Show modal
@@ -200,8 +158,8 @@ function hideAddInventoryModal() {
     document.getElementById('inventoryForm').reset();
 }
 
-// Save inventory
-function saveInventory() {
+// Save vaccine to Firestore
+async function saveInventory() {
     const name = document.getElementById('vaccineName')?.value.trim();
     const description = document.getElementById('description')?.value.trim();
     const dosage = document.getElementById('dosage')?.value.trim();
@@ -214,51 +172,67 @@ function saveInventory() {
         return;
     }
 
+    // Get the next sequential number
+    const nextNumber = await getNextNumber();
+    
+    // Use the sequential number as the document ID
+    const docId = nextNumber.toString();
+
     const newItem = {
-        no: inventory.length + 1,
-        name,
+        doc_id: docId,
+        no: nextNumber,
+        name: name,
         description: description || '',
-        dosage,
-        form,
-        expiry,
-        quantity: parseInt(quantity)
+        dosage: dosage,
+        form: form,
+        expiry: expiry,
+        quantity: parseInt(quantity),
+        created_at: new Date().toISOString()
     };
 
-    inventory.push(newItem);
-    loadInventory();
-    hideAddInventoryModal();
-    alert('Vaccine added successfully!');
+    try {
+        await db.collection('vaccines_inventory').doc(docId).set(newItem);
+        alert('Vaccine added successfully!');
+        await loadInventory();
+        hideAddInventoryModal();
+    } catch (error) {
+        console.error("Error saving vaccine:", error);
+        alert("Error saving vaccine. Please try again.");
+    }
 }
 
 // View item
-function viewItem(no) {
-    const item = inventory.find(i => i.no === no);
+function viewItem(docId) {
+    const item = allVaccines.find(i => i.doc_id === docId);
     if (item) {
-        alert(`Vaccine Details:
+        alert(`VACCINE DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+No.: ${item.no}
 Name: ${item.name}
 Dosage: ${item.dosage}
 Form: ${item.form}
 Description: ${item.description || 'N/A'}
 Expiry: ${item.expiry}
-Quantity: ${item.quantity}`);
+Quantity: ${item.quantity}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     }
 }
 
 // Edit item
-function editItem(no) {
-    alert(`Edit feature will be implemented soon for item #${no}`);
+function editItem(docId) {
+    alert(`Edit feature will be implemented soon for vaccine #${docId}`);
 }
 
-// Delete item
-function deleteItem(no) {
-    if (confirm(`Delete item #${no}?`)) {
-        const index = inventory.findIndex(i => i.no === no);
-        if (index !== -1) {
-            inventory.splice(index, 1);
-            // Re-number items
-            inventory.forEach((item, idx) => { item.no = idx + 1; });
-            loadInventory();
-            alert('Item deleted successfully');
+// Delete item from Firestore
+async function deleteItem(docId) {
+    if (confirm('Delete this vaccine?')) {
+        try {
+            await db.collection('vaccines_inventory').doc(docId).delete();
+            alert('Vaccine deleted successfully');
+            await loadInventory();
+        } catch (error) {
+            console.error("Error deleting vaccine:", error);
+            alert("Error deleting vaccine. Please try again.");
         }
     }
 }

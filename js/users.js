@@ -1,108 +1,8 @@
-// ===== USER MAINTENANCE PAGE FUNCTIONALITY =====
+// users.js
+// ===== USER MAINTENANCE PAGE WITH FIREBASE =====
 
-// Sample user data
-let users = [
-    {
-        user_id: '1',
-        username: 'mmondejar',
-        password: 'admin123',
-        name: 'Mark Noe Mondejar',
-        position: 'IT Manager',
-        department: 'IT',
-        date_created: '2025-11-12',
-        access_level: 'Admin'
-    },
-    {
-        user_id: '2',
-        username: 'msantos',
-        password: 'bns123',
-        name: 'Maria Santos',
-        position: 'BNS Worker',
-        department: 'Health Center',
-        date_created: '2025-10-15',
-        access_level: 'BNS Worker'
-    },
-    {
-        user_id: '3',
-        username: 'jcruz',
-        password: 'nurse123',
-        name: 'Jane Cruz',
-        position: 'Nurse',
-        department: 'Health Center',
-        date_created: '2025-09-20',
-        access_level: 'Nurse'
-    },
-    {
-        user_id: '4',
-        username: 'dreyes',
-        password: 'nutri123',
-        name: 'Dr. Reyes',
-        position: 'Nutritionist',
-        department: 'Nutrition',
-        date_created: '2025-08-05',
-        access_level: 'Nutritionist'
-    },
-    {
-        user_id: '5',
-        username: 'jdela',
-        password: 'staff123',
-        name: 'Juan Dela Cruz',
-        position: 'Staff',
-        department: 'Administration',
-        date_created: '2025-11-01',
-        access_level: 'Staff'
-    },
-    {
-        user_id: '6',
-        username: 'alopez',
-        password: 'view123',
-        name: 'Ana Lopez',
-        position: 'External Viewer',
-        department: 'LGU',
-        date_created: '2025-11-18',
-        access_level: 'View Only'
-    },
-    {
-        user_id: '7',
-        username: 'rflores',
-        password: 'bns456',
-        name: 'Rosa Flores',
-        position: 'BNS Worker',
-        department: 'Health Center',
-        date_created: '2025-10-22',
-        access_level: 'BNS Worker'
-    },
-    {
-        user_id: '8',
-        username: 'psantos',
-        password: 'nurse456',
-        name: 'Pedro Santos',
-        position: 'Nurse',
-        department: 'Health Center',
-        date_created: '2025-09-28',
-        access_level: 'Nurse'
-    },
-    {
-        user_id: '9',
-        username: 'cgonzales',
-        password: 'admin456',
-        name: 'Carla Gonzales',
-        position: 'System Administrator',
-        department: 'IT',
-        date_created: '2025-07-10',
-        access_level: 'Admin'
-    },
-    {
-        user_id: '10',
-        username: 'lfernandez',
-        password: 'staff456',
-        name: 'Luis Fernandez',
-        position: 'Staff',
-        department: 'Records',
-        date_created: '2025-11-05',
-        access_level: 'Staff'
-    }
-];
+let allUsers = [];
+let allStaff = [];
 
 // Display current date
 function displayCurrentDate() {
@@ -118,6 +18,98 @@ function displayCurrentDate() {
     }
 }
 
+// Load staff for dropdown
+async function loadStaffForDropdown() {
+    try {
+        const staffSelect = document.getElementById('staffId');
+        if (!staffSelect) return;
+        
+        staffSelect.innerHTML = '<option value="">Loading staff...</option>';
+        allStaff = [];
+        
+        const snapshot = await db.collection('staff').orderBy('doctor_id').get();
+        
+        staffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+        
+        if (snapshot.empty) {
+            staffSelect.innerHTML = '<option value="">No staff found. Please add staff first.</option>';
+            return;
+        }
+        
+        snapshot.forEach(doc => {
+            const staff = doc.data();
+            allStaff.push(staff);
+            const option = document.createElement('option');
+            option.value = staff.doc_id;
+            option.textContent = `${staff.doctor_id} - ${staff.first_name} ${staff.last_name} (${staff.specialty})`;
+            staffSelect.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error("Error loading staff:", error);
+        const staffSelect = document.getElementById('staffId');
+        if (staffSelect) {
+            staffSelect.innerHTML = '<option value="">Error loading staff</option>';
+        }
+    }
+}
+
+// Update staff info when selected
+function updateStaffInfo() {
+    const staffSelect = document.getElementById('staffId');
+    const selectedValue = staffSelect.value;
+    const nameInput = document.getElementById('name');
+    const positionInput = document.getElementById('position');
+    const departmentInput = document.getElementById('department');
+    const usernameInput = document.getElementById('username');
+    
+    if (selectedValue && allStaff.length > 0) {
+        const staff = allStaff.find(s => s.doc_id === selectedValue);
+        if (staff) {
+            // Set name
+            nameInput.value = `${staff.first_name} ${staff.middle_name ? staff.middle_name + ' ' : ''}${staff.last_name}`;
+            // Set position from specialty
+            positionInput.value = staff.specialty;
+            // Set department
+            departmentInput.value = staff.department || getDepartmentFromSpecialty(staff.specialty);
+            // Auto-generate username from name
+            const generatedUsername = `${staff.first_name.toLowerCase()}.${staff.last_name.toLowerCase()}`;
+            usernameInput.value = generatedUsername;
+        } else {
+            clearStaffFields();
+        }
+    } else {
+        clearStaffFields();
+    }
+}
+
+// Get department based on specialty
+function getDepartmentFromSpecialty(specialty) {
+    switch(specialty) {
+        case 'Pediatrics':
+            return 'Pediatrics Department';
+        case 'Obstetrics and Gynecology':
+            return 'Obstetrics Department';
+        case 'Geriatrics':
+            return 'Geriatrics Department';
+        case 'BNS Worker':
+            return 'BNS';
+        case 'Nurse':
+            return 'Nursing';
+        case 'IT':
+            return 'IT Department';
+        default:
+            return 'Health Center';
+    }
+}
+
+// Clear staff fields
+function clearStaffFields() {
+    document.getElementById('name').value = '';
+    document.getElementById('position').value = '';
+    document.getElementById('department').value = '';
+}
+
 // Get access level badge class
 function getAccessBadgeClass(accessLevel) {
     switch(accessLevel) {
@@ -125,6 +117,7 @@ function getAccessBadgeClass(accessLevel) {
         case 'BNS Worker': return 'access-bns';
         case 'Nurse': return 'access-nurse';
         case 'Nutritionist': return 'access-nutritionist';
+        case 'Doctor': return 'access-nurse';
         case 'Staff': return 'access-staff';
         case 'View Only': return 'access-view';
         default: return '';
@@ -133,6 +126,7 @@ function getAccessBadgeClass(accessLevel) {
 
 // Format date for display
 function formatDate(dateString) {
+    if (!dateString) return '-';
     const date = new Date(dateString);
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
@@ -143,44 +137,62 @@ function maskPassword(password) {
     return '•'.repeat(Math.min(password.length, 8));
 }
 
-// Load users into table
-function loadUsers() {
+// Load users from Firestore
+async function loadUsers() {
     const tableBody = document.getElementById('usersTableBody');
     if (!tableBody) return;
     
-    tableBody.innerHTML = '';
-    
-    users.forEach(user => {
-        const row = document.createElement('tr');
-        const accessBadgeClass = getAccessBadgeClass(user.access_level);
-        const maskedPassword = maskPassword(user.password);
+    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Loading users...<\/div>';
+
+    try {
+        const snapshot = await db.collection('users').orderBy('user_id').get();
         
-        row.innerHTML = `
-            <td>${user.user_id}</td>
-            <td>${user.username}</td>
-            <td><span class="password-mask" title="${user.password}">${maskedPassword}</span></td>
-            <td>${user.name}</td>
-            <td>${user.position}</td>
-            <td>${user.department}</td>
-            <td>${formatDate(user.date_created)}</td>
-            <td><span class="access-badge ${accessBadgeClass}">${user.access_level}</span></td>
-            <td>
-                <div class="action-buttons">
-                    <button class="view-btn" onclick="viewUser('${user.user_id}')">View</button>
-                    <button class="edit-btn" onclick="editUser('${user.user_id}')">Edit</button>
-                    <button class="reset-password-btn" onclick="resetPassword('${user.user_id}')">Reset</button>
-                    <button class="delete-btn" onclick="deleteUser('${user.user_id}')">Delete</button>
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+        if (snapshot.empty) {
+            tableBody.innerHTML = '<td><td colspan="9" style="text-align: center;">No users found. Click "+ Add User" to add.<\/div>';
+            allUsers = [];
+            return;
+        }
+        
+        allUsers = [];
+        tableBody.innerHTML = '';
+        
+        snapshot.forEach(doc => {
+            const user = doc.data();
+            allUsers.push(user);
+            const accessBadgeClass = getAccessBadgeClass(user.access_level);
+            const maskedPassword = maskPassword(user.password);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.user_id || '-'}<\/div>
+                <td>${user.username || '-'}<\/div>
+                <td><span class="password-mask" title="${user.password}">${maskedPassword}</span><\/div>
+                <td>${user.name || '-'}<\/div>
+                <td>${user.position || '-'}<\/div>
+                <td>${user.department || '-'}<\/div>
+                <td>${formatDate(user.date_created)}<\/div>
+                <td><span class="access-badge ${accessBadgeClass}">${user.access_level}</span><\/div>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" onclick="viewUser('${user.user_id}')">View</button>
+                        <button class="edit-btn" onclick="editUser('${user.user_id}')">Edit</button>
+                        <button class="reset-password-btn" onclick="resetPassword('${user.user_id}')">Reset</button>
+                        <button class="delete-btn" onclick="deleteUser('${user.user_id}')">Delete</button>
+                    </div>
+                <\/div>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading users:", error);
+        tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">Error loading data. Please check your connection.<\/div>';
+    }
 }
 
 // Search users
 function searchUsers() {
     const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-    const filteredUsers = users.filter(user => 
+    const filteredUsers = allUsers.filter(user => 
         user.user_id.toLowerCase().includes(searchTerm) ||
         user.username.toLowerCase().includes(searchTerm) ||
         user.name.toLowerCase().includes(searchTerm) ||
@@ -188,14 +200,13 @@ function searchUsers() {
         user.department.toLowerCase().includes(searchTerm) ||
         user.access_level.toLowerCase().includes(searchTerm)
     );
-    
     displayFilteredUsers(filteredUsers);
 }
 
 // Sort users
 function sortUsers() {
     const sortBy = document.getElementById('sortBy').value;
-    const sortedUsers = [...users].sort((a, b) => {
+    const sortedUsers = [...allUsers].sort((a, b) => {
         let valA = a[sortBy] || '';
         let valB = b[sortBy] || '';
         
@@ -207,7 +218,6 @@ function sortUsers() {
         }
         return String(valA).localeCompare(String(valB));
     });
-    
     displayFilteredUsers(sortedUsers);
 }
 
@@ -219,19 +229,19 @@ function displayFilteredUsers(userList) {
     tableBody.innerHTML = '';
     
     userList.forEach(user => {
-        const row = document.createElement('tr');
         const accessBadgeClass = getAccessBadgeClass(user.access_level);
         const maskedPassword = maskPassword(user.password);
         
+        const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${user.user_id}</td>
-            <td>${user.username}</td>
-            <td><span class="password-mask" title="${user.password}">${maskedPassword}</span></td>
-            <td>${user.name}</td>
-            <td>${user.position}</td>
-            <td>${user.department}</td>
-            <td>${formatDate(user.date_created)}</td>
-            <td><span class="access-badge ${accessBadgeClass}">${user.access_level}</span></td>
+            <td>${user.user_id || '-'}<\/div>
+            <td>${user.username || '-'}<\/div>
+            <td><span class="password-mask" title="${user.password}">${maskedPassword}</span><\/div>
+            <td>${user.name || '-'}<\/div>
+            <td>${user.position || '-'}<\/div>
+            <td>${user.department || '-'}<\/div>
+            <td>${formatDate(user.date_created)}<\/div>
+            <td><span class="access-badge ${accessBadgeClass}">${user.access_level}</span><\/div>
             <td>
                 <div class="action-buttons">
                     <button class="view-btn" onclick="viewUser('${user.user_id}')">View</button>
@@ -239,7 +249,7 @@ function displayFilteredUsers(userList) {
                     <button class="reset-password-btn" onclick="resetPassword('${user.user_id}')">Reset</button>
                     <button class="delete-btn" onclick="deleteUser('${user.user_id}')">Delete</button>
                 </div>
-            </td>
+            <\/div>
         `;
         tableBody.appendChild(row);
     });
@@ -248,6 +258,7 @@ function displayFilteredUsers(userList) {
 // Show add user modal
 function showAddUserModal() {
     document.getElementById('addUserModal').classList.add('show');
+    loadStaffForDropdown(); // Load staff when modal opens
 }
 
 // Hide add user modal
@@ -259,105 +270,155 @@ function hideAddUserModal() {
 // Clear user form
 function clearUserForm() {
     document.getElementById('userForm').reset();
+    document.getElementById('staffId').innerHTML = '<option value="">Select Staff Member</option>';
 }
 
 // Generate new user ID
-function generateUserId() {
-    const lastId = Math.max(...users.map(u => parseInt(u.user_id)));
-    return (lastId + 1).toString();
+async function getNextUserId() {
+    try {
+        const snapshot = await db.collection('users').orderBy('user_id', 'desc').limit(1).get();
+        if (snapshot.empty) {
+            return '1';
+        }
+        const lastUser = snapshot.docs[0].data();
+        const lastId = parseInt(lastUser.user_id);
+        return (lastId + 1).toString();
+    } catch (error) {
+        console.error("Error getting next user ID:", error);
+        return (allUsers.length + 1).toString();
+    }
 }
 
-// Save new user
-function saveUser() {
-    // Get form values
+// Save new user to Firestore
+async function saveUser() {
+    const staffId = document.getElementById('staffId').value;
     const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const name = document.getElementById('name').value.trim();
-    const position = document.getElementById('position').value.trim();
-    const department = document.getElementById('department').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const name = document.getElementById('name').value;
+    const position = document.getElementById('position').value;
+    const department = document.getElementById('department').value;
     const accessLevel = document.getElementById('accessLevel').value;
     
-    // Validate required fields
-    if (!username || !password || !name || !position || !department || !accessLevel) {
-        alert('Please fill in all required fields');
+    // Validate staff selection
+    if (!staffId) {
+        alert('Please select a staff member');
         return;
     }
     
-    // Get current date in YYYY-MM-DD format
+    // Validate username
+    if (!username) {
+        alert('Please enter a username');
+        return;
+    }
+    
+    // Validate password
+    if (!password) {
+        alert('Please enter a password');
+        return;
+    }
+    
+    // Check if passwords match
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+    
+    // Validate access level
+    if (!accessLevel) {
+        alert('Please select an access level');
+        return;
+    }
+    
+    // Check if username already exists
+    if (allUsers.some(u => u.username === username)) {
+        alert('Username already exists. Please choose another username.');
+        return;
+    }
+    
+    const newUserId = await getNextUserId();
     const today = new Date();
     const dateCreated = today.toISOString().split('T')[0];
     
-    // Create new user object
     const newUser = {
-        user_id: generateUserId(),
+        user_id: newUserId,
+        staff_id: staffId,
         username: username,
         password: password,
         name: name,
         position: position,
         department: department,
         date_created: dateCreated,
-        access_level: accessLevel
+        access_level: accessLevel,
+        created_at: new Date().toISOString()
     };
     
-    // Add to users array
-    users.push(newUser);
-    
-    // Reload table
-    loadUsers();
-    
-    // Hide modal
-    hideAddUserModal();
-    
-    alert(`User ${username} created successfully`);
+    try {
+        await db.collection('users').doc(newUserId).set(newUser);
+        alert(`User ${username} created successfully with ID: ${newUserId}`);
+        await loadUsers();
+        hideAddUserModal();
+    } catch (error) {
+        console.error("Error saving user:", error);
+        alert("Error saving user. Please try again.");
+    }
 }
 
 // View user
 function viewUser(userId) {
-    const user = users.find(u => u.user_id === userId);
+    const user = allUsers.find(u => u.user_id === userId);
     if (user) {
-        alert(`User Details:
+        alert(`USER DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ID: ${user.user_id}
 Username: ${user.username}
 Name: ${user.name}
 Position: ${user.position}
 Department: ${user.department}
 Date Created: ${formatDate(user.date_created)}
-Access Level: ${user.access_level}`);
+Access Level: ${user.access_level}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     }
 }
 
 // Edit user
 function editUser(userId) {
-    const user = users.find(u => u.user_id === userId);
-    if (user) {
-        alert(`Edit user ${user.username}\n\nThis feature will be implemented in the next phase.`);
-    }
+    alert(`Edit user ${userId}\n\nThis feature will be implemented in the next phase.`);
 }
 
 // Reset password
-function resetPassword(userId) {
-    const user = users.find(u => u.user_id === userId);
+async function resetPassword(userId) {
+    const user = allUsers.find(u => u.user_id === userId);
     if (user) {
         if (confirm(`Reset password for user ${user.username}?`)) {
-            // In a real app, you'd send a reset email or generate a temporary password
             const tempPassword = 'temp123';
-            user.password = tempPassword;
-            loadUsers();
-            alert(`Password for ${user.username} has been reset to: ${tempPassword}`);
+            try {
+                await db.collection('users').doc(userId).update({
+                    password: tempPassword,
+                    updated_at: new Date().toISOString()
+                });
+                alert(`Password for ${user.username} has been reset to: ${tempPassword}`);
+                await loadUsers();
+            } catch (error) {
+                console.error("Error resetting password:", error);
+                alert("Error resetting password. Please try again.");
+            }
         }
     }
 }
 
-// Delete user
-function deleteUser(userId) {
-    const user = users.find(u => u.user_id === userId);
+// Delete user from Firestore
+async function deleteUser(userId) {
+    const user = allUsers.find(u => u.user_id === userId);
     if (user) {
         if (confirm(`Delete user ${user.username}? This action cannot be undone.`)) {
-            const index = users.findIndex(u => u.user_id === userId);
-            if (index !== -1) {
-                users.splice(index, 1);
-                loadUsers();
+            try {
+                await db.collection('users').doc(userId).delete();
                 alert(`User ${user.username} has been deleted.`);
+                await loadUsers();
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert("Error deleting user. Please try again.");
             }
         }
     }
@@ -368,7 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
     displayCurrentDate();
     loadUsers();
     
-    // Add search on enter key
     document.getElementById('userSearch')?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             searchUsers();

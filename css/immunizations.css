@@ -1,3 +1,4 @@
+/* immunizations.css */
 /* ===== CHILD IMMUNIZATIONS PAGE SPECIFIC STYLES ===== */
 /* Following the exact same structure as patients.css */
 
@@ -339,6 +340,21 @@
 
 .cancel-btn:hover {
     background: #5a6268;
+}
+
+.patient-name {
+    font-weight: 500;
+    color: #2B6896;
+}
+
+.vaccine-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
 }
 
 /* Responsive */

@@ -1,86 +1,8 @@
-// ===== PREGNANCY HISTORY PAGE FUNCTIONALITY =====
+// pregnancy-history.js
+// ===== PREGNANCY HISTORY PAGE WITH FIREBASE =====
 
-// Sample pregnancy history data
-let pregnancyHistory = [
-    {
-        patient_id: '1002',
-        gravidity: 3,
-        parity: 2,
-        type_of_delivery: 'Normal',
-        other_delivery_method: null,
-        no_of_full_term: 2,
-        no_of_premature: 1,
-        no_of_abortion: 0,
-        no_of_living_children: 3,
-        pregnancy_induced_hypertension: 'No',
-        remarks: 'All normal deliveries. Healthy children.'
-    },
-    {
-        patient_id: '1006',
-        gravidity: 2,
-        parity: 1,
-        type_of_delivery: 'Cesarean',
-        other_delivery_method: null,
-        no_of_full_term: 1,
-        no_of_premature: 1,
-        no_of_abortion: 0,
-        no_of_living_children: 2,
-        pregnancy_induced_hypertension: 'No',
-        remarks: 'First baby delivered via CS due to breech presentation'
-    },
-    {
-        patient_id: '1007',
-        gravidity: 1,
-        parity: 0,
-        type_of_delivery: null,
-        other_delivery_method: null,
-        no_of_full_term: 0,
-        no_of_premature: 0,
-        no_of_abortion: 0,
-        no_of_living_children: 0,
-        pregnancy_induced_hypertension: 'No',
-        remarks: 'First pregnancy. Currently in 1st trimester.'
-    },
-    {
-        patient_id: '1008',
-        gravidity: 4,
-        parity: 3,
-        type_of_delivery: 'Normal',
-        other_delivery_method: null,
-        no_of_full_term: 3,
-        no_of_premature: 1,
-        no_of_abortion: 0,
-        no_of_living_children: 4,
-        pregnancy_induced_hypertension: 'Yes',
-        remarks: 'Had PIH during third pregnancy. Monitored closely.'
-    },
-    {
-        patient_id: '1009',
-        gravidity: 2,
-        parity: 1,
-        type_of_delivery: 'Other',
-        other_delivery_method: 'Water Birth',
-        no_of_full_term: 1,
-        no_of_premature: 0,
-        no_of_abortion: 1,
-        no_of_living_children: 1,
-        pregnancy_induced_hypertension: 'No',
-        remarks: 'Water birth for first delivery. Previous miscarriage.'
-    },
-    {
-        patient_id: '1010',
-        gravidity: 1,
-        parity: 0,
-        type_of_delivery: null,
-        other_delivery_method: null,
-        no_of_full_term: 0,
-        no_of_premature: 0,
-        no_of_abortion: 0,
-        no_of_living_children: 0,
-        pregnancy_induced_hypertension: 'No',
-        remarks: 'First pregnancy. Regular checkups.'
-    }
-];
+let allPregnancyHistory = [];
+let allPregnantPatients = [];
 
 // Display current date
 function displayCurrentDate() {
@@ -92,45 +14,141 @@ function displayCurrentDate() {
     }
 }
 
-// Load pregnancy history into table
-function loadHistory() {
+// Helper function to get patient name by ID
+async function getPatientNameById(patientId) {
+    let patient = allPregnantPatients.find(p => p.patient_id === patientId);
+    if (patient) {
+        return `${patient.first_name} ${patient.last_name}`;
+    }
+    try {
+        const doc = await db.collection('patients').doc(patientId).get();
+        if (doc.exists) {
+            const patientData = doc.data();
+            allPregnantPatients.push(patientData);
+            return `${patientData.first_name} ${patientData.last_name}`;
+        }
+    } catch (error) {
+        console.error("Error fetching patient name:", error);
+    }
+    return '-';
+}
+
+// Load ONLY PREGNANT patients for dropdown
+async function loadPatientsForDropdown() {
+    try {
+        const patientSelect = document.getElementById('patientId');
+        if (!patientSelect) return;
+        
+        patientSelect.innerHTML = '<option value="">Loading...</option>';
+        allPregnantPatients = [];
+        
+        const snapshot = await db.collection('patients').where('patient_type', '==', 'Pregnant').get();
+        
+        patientSelect.innerHTML = '<option value="">Select Patient ID</option>';
+        
+        if (snapshot.empty) {
+            patientSelect.innerHTML = '<option value="">No pregnant patients found</option>';
+            return;
+        }
+        
+        snapshot.forEach(doc => {
+            const patient = doc.data();
+            allPregnantPatients.push(patient);
+            const option = document.createElement('option');
+            option.value = patient.patient_id;
+            option.textContent = patient.patient_id;
+            patientSelect.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error("Error loading patients for dropdown:", error);
+        const patientSelect = document.getElementById('patientId');
+        if (patientSelect) {
+            patientSelect.innerHTML = '<option value="">Error loading patients</option>';
+        }
+    }
+}
+
+// Update patient name display when patient selected
+function updatePatientNameDisplay() {
+    const patientSelect = document.getElementById('patientId');
+    const patientNameDisplay = document.getElementById('patientNameDisplay');
+    const selectedValue = patientSelect.value;
+    
+    if (selectedValue && allPregnantPatients.length > 0) {
+        const patient = allPregnantPatients.find(p => p.patient_id === selectedValue);
+        if (patient) {
+            patientNameDisplay.value = `${patient.first_name} ${patient.last_name}`;
+        } else {
+            patientNameDisplay.value = '';
+        }
+    } else {
+        patientNameDisplay.value = '';
+    }
+}
+
+// Load pregnancy history from Firestore
+async function loadHistory() {
     const tableBody = document.getElementById('historyTableBody');
     if (!tableBody) return;
     
-    tableBody.innerHTML = '';
+    tableBody.innerHTML = '<td><td colspan="12" style="text-align: center;">Loading pregnancy history...<\/div>';
     
-    pregnancyHistory.forEach(record => {
-        const row = document.createElement('tr');
-        const pihClass = record.pregnancy_induced_hypertension === 'Yes' ? 'pih-yes' : 'pih-no';
+    try {
+        const snapshot = await db.collection('pregnancy_history').orderBy('patient_id').get();
         
-        row.innerHTML = `
-            <td>${record.patient_id}</td>
-            <td>${record.gravidity || 0}</td>
-            <td>${record.parity || 0}</td>
-            <td>${record.type_of_delivery || '-'}</td>
-            <td>${record.other_delivery_method || '-'}</td>
-            <td>${record.no_of_full_term || 0}</td>
-            <td>${record.no_of_premature || 0}</td>
-            <td>${record.no_of_abortion || 0}</td>
-            <td>${record.no_of_living_children || 0}</td>
-            <td class="${pihClass}">${record.pregnancy_induced_hypertension || 'No'}</td>
-            <td>${record.remarks || '-'}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="view-btn" onclick="viewHistory('${record.patient_id}')">View</button>
-                    <button class="edit-btn" onclick="editHistory('${record.patient_id}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteHistory('${record.patient_id}')">Delete</button>
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+        if (snapshot.empty) {
+            tableBody.innerHTML = '<td><td colspan="12" style="text-align: center;">No pregnancy history found. Click "+ Add History" to add.<\/div>';
+            allPregnancyHistory = [];
+            return;
+        }
+        
+        allPregnancyHistory = [];
+        tableBody.innerHTML = '';
+        
+        for (const doc of snapshot.docs) {
+            const record = doc.data();
+            allPregnancyHistory.push(record);
+            
+            // Get patient name
+            let patientName = record.patient_name || await getPatientNameById(record.patient_id);
+            
+            const pihClass = record.pregnancy_induced_hypertension === 'Yes' ? 'pih-yes' : 'pih-no';
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.patient_id || '-'}<\/div>
+                <td>${patientName}<\/div>
+                <td>${record.gravidity || 0}<\/div>
+                <td>${record.parity || 0}<\/div>
+                <td>${record.type_of_delivery || '-'}<\/div>
+                <td>${record.other_delivery_method || '-'}<\/div>
+                <td>${record.no_of_full_term || 0}<\/div>
+                <td>${record.no_of_premature || 0}<\/div>
+                <td>${record.no_of_abortion || 0}<\/div>
+                <td>${record.no_of_living_children || 0}<\/div>
+                <td class="${pihClass}">${record.pregnancy_induced_hypertension || 'No'}<\/div>
+                <td>${record.remarks || '-'}<\/div>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" onclick="viewHistory('${record.history_id || record.patient_id}')">View</button>
+                        <button class="edit-btn" onclick="editHistory('${record.history_id || record.patient_id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteHistory('${record.history_id || record.patient_id}')">Delete</button>
+                    </div>
+                <\/div>
+            `;
+            tableBody.appendChild(row);
+        }
+    } catch (error) {
+        console.error("Error loading pregnancy history:", error);
+        tableBody.innerHTML = '<td><td colspan="12" style="text-align: center; color: red;">Error loading data. Please check your connection.<\/div>';
+    }
 }
 
 // Search history
 function searchHistory() {
     const searchTerm = document.getElementById('historySearch').value.toLowerCase();
-    const filteredHistory = pregnancyHistory.filter(record => 
+    const filteredHistory = allPregnancyHistory.filter(record => 
         record.patient_id.toLowerCase().includes(searchTerm) ||
         (record.remarks && record.remarks.toLowerCase().includes(searchTerm))
     );
@@ -140,7 +158,7 @@ function searchHistory() {
 // Sort history
 function sortHistory() {
     const sortBy = document.getElementById('sortBy').value;
-    const sortedHistory = [...pregnancyHistory].sort((a, b) => {
+    const sortedHistory = [...allPregnancyHistory].sort((a, b) => {
         let valA = a[sortBy] || '';
         let valB = b[sortBy] || '';
         
@@ -163,28 +181,30 @@ function displayFilteredHistory(historyList) {
     tableBody.innerHTML = '';
     
     historyList.forEach(record => {
-        const row = document.createElement('tr');
+        let patientName = record.patient_name || '-';
         const pihClass = record.pregnancy_induced_hypertension === 'Yes' ? 'pih-yes' : 'pih-no';
         
+        const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${record.patient_id}</td>
-            <td>${record.gravidity || 0}</td>
-            <td>${record.parity || 0}</td>
-            <td>${record.type_of_delivery || '-'}</td>
-            <td>${record.other_delivery_method || '-'}</td>
-            <td>${record.no_of_full_term || 0}</td>
-            <td>${record.no_of_premature || 0}</td>
-            <td>${record.no_of_abortion || 0}</td>
-            <td>${record.no_of_living_children || 0}</td>
-            <td class="${pihClass}">${record.pregnancy_induced_hypertension || 'No'}</td>
-            <td>${record.remarks || '-'}</td>
+            <td>${record.patient_id || '-'}<\/div>
+            <td>${patientName}<\/div>
+            <td>${record.gravidity || 0}<\/div>
+            <td>${record.parity || 0}<\/div>
+            <td>${record.type_of_delivery || '-'}<\/div>
+            <td>${record.other_delivery_method || '-'}<\/div>
+            <td>${record.no_of_full_term || 0}<\/div>
+            <td>${record.no_of_premature || 0}<\/div>
+            <td>${record.no_of_abortion || 0}<\/div>
+            <td>${record.no_of_living_children || 0}<\/div>
+            <td class="${pihClass}">${record.pregnancy_induced_hypertension || 'No'}<\/div>
+            <td>${record.remarks || '-'}<\/div>
             <td>
                 <div class="action-buttons">
-                    <button class="view-btn" onclick="viewHistory('${record.patient_id}')">View</button>
-                    <button class="edit-btn" onclick="editHistory('${record.patient_id}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteHistory('${record.patient_id}')">Delete</button>
+                    <button class="view-btn" onclick="viewHistory('${record.history_id || record.patient_id}')">View</button>
+                    <button class="edit-btn" onclick="editHistory('${record.history_id || record.patient_id}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteHistory('${record.history_id || record.patient_id}')">Delete</button>
                 </div>
-            </td>
+            <\/div>
         `;
         tableBody.appendChild(row);
     });
@@ -193,6 +213,7 @@ function displayFilteredHistory(historyList) {
 // Show add history modal
 function showAddHistoryModal() {
     document.getElementById('addHistoryModal').classList.add('show');
+    loadPatientsForDropdown();
 }
 
 // Hide add history modal
@@ -204,12 +225,17 @@ function hideAddHistoryModal() {
 // Clear history form
 function clearHistoryForm() {
     document.getElementById('historyForm').reset();
+    document.getElementById('patientNameDisplay').value = '';
 }
 
-// Save new pregnancy history
-function saveHistory() {
-    // Get form values
-    const patientId = document.getElementById('patientId').value.trim();
+// Generate unique ID
+function generateHistoryId() {
+    return 'hist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+}
+
+// Save new pregnancy history to Firestore
+async function saveHistory() {
+    const patientId = document.getElementById('patientId').value;
     const gravidity = document.getElementById('gravidity').value;
     const parity = document.getElementById('parity').value;
     const typeOfDelivery = document.getElementById('typeOfDelivery').value;
@@ -221,15 +247,34 @@ function saveHistory() {
     const pih = document.getElementById('pih').value;
     const remarks = document.getElementById('remarks').value.trim();
     
-    // Validate required field
     if (!patientId) {
-        alert('Please enter Patient ID');
+        alert('Please select a Patient ID');
         return;
     }
     
-    // Create new history object
+    const historyId = generateHistoryId();
+    
+    // Get patient name
+    let patientName = '';
+    const patient = allPregnantPatients.find(p => p.patient_id === patientId);
+    if (patient) {
+        patientName = `${patient.first_name} ${patient.last_name}`;
+    } else {
+        try {
+            const doc = await db.collection('patients').doc(patientId).get();
+            if (doc.exists) {
+                const patientData = doc.data();
+                patientName = `${patientData.first_name} ${patientData.last_name}`;
+            }
+        } catch (error) {
+            console.error("Error fetching patient:", error);
+        }
+    }
+    
     const newHistory = {
+        history_id: historyId,
         patient_id: patientId,
+        patient_name: patientName,
         gravidity: gravidity ? parseInt(gravidity) : 0,
         parity: parity ? parseInt(parity) : 0,
         type_of_delivery: typeOfDelivery || null,
@@ -239,26 +284,27 @@ function saveHistory() {
         no_of_abortion: abortion ? parseInt(abortion) : 0,
         no_of_living_children: livingChildren ? parseInt(livingChildren) : 0,
         pregnancy_induced_hypertension: pih || 'No',
-        remarks: remarks || null
+        remarks: remarks || null,
+        created_at: new Date().toISOString()
     };
     
-    // Add to array
-    pregnancyHistory.push(newHistory);
-    
-    // Reload table
-    loadHistory();
-    
-    // Hide modal
-    hideAddHistoryModal();
-    
-    alert(`Pregnancy history for Patient ${patientId} saved successfully`);
+    try {
+        await db.collection('pregnancy_history').doc(historyId).set(newHistory);
+        alert(`Pregnancy history for Patient ${patientId} saved successfully!`);
+        await loadHistory();
+        hideAddHistoryModal();
+    } catch (error) {
+        console.error("Error saving pregnancy history:", error);
+        alert("Error saving pregnancy history. Please try again.");
+    }
 }
 
 // View history
-function viewHistory(patientId) {
-    const record = pregnancyHistory.find(r => r.patient_id === patientId);
+function viewHistory(historyId) {
+    const record = allPregnancyHistory.find(r => (r.history_id === historyId) || (r.patient_id === historyId));
     if (record) {
-        alert(`Pregnancy History Details:
+        alert(`PREGNANCY HISTORY DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Patient ID: ${record.patient_id}
 Gravidity: ${record.gravidity || 0}
 Parity: ${record.parity || 0}
@@ -269,23 +315,29 @@ Premature Births: ${record.no_of_premature || 0}
 Abortions: ${record.no_of_abortion || 0}
 Living Children: ${record.no_of_living_children || 0}
 PIH: ${record.pregnancy_induced_hypertension || 'No'}
-Remarks: ${record.remarks || 'N/A'}`);
+Remarks: ${record.remarks || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     }
 }
 
 // Edit history
-function editHistory(patientId) {
-    alert(`Edit pregnancy history for Patient ${patientId}\n\nThis feature will be implemented in the next phase.`);
+function editHistory(historyId) {
+    alert(`Edit pregnancy history\n\nThis feature will be implemented in the next phase.`);
 }
 
-// Delete history
-function deleteHistory(patientId) {
-    if (confirm(`Delete pregnancy history for Patient ${patientId}?`)) {
-        const index = pregnancyHistory.findIndex(r => r.patient_id === patientId);
-        if (index !== -1) {
-            pregnancyHistory.splice(index, 1);
-            loadHistory();
-            alert(`Pregnancy history for Patient ${patientId} has been deleted.`);
+// Delete history from Firestore
+async function deleteHistory(historyId) {
+    if (confirm(`Delete this pregnancy history record?`)) {
+        try {
+            const recordToDelete = allPregnancyHistory.find(r => (r.history_id === historyId) || (r.patient_id === historyId));
+            if (recordToDelete && recordToDelete.history_id) {
+                await db.collection('pregnancy_history').doc(recordToDelete.history_id).delete();
+                alert(`Pregnancy history deleted successfully.`);
+                await loadHistory();
+            }
+        } catch (error) {
+            console.error("Error deleting pregnancy history:", error);
+            alert("Error deleting pregnancy history. Please try again.");
         }
     }
 }
@@ -295,9 +347,12 @@ document.addEventListener('DOMContentLoaded', function() {
     displayCurrentDate();
     loadHistory();
     
-    document.getElementById('historySearch')?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchHistory();
-        }
-    });
+    const searchInput = document.getElementById('historySearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchHistory();
+            }
+        });
+    }
 });

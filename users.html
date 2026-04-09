@@ -1,3 +1,4 @@
+<!-- users.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,15 @@
     <title>NutriTrack PH - User Maintenance</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/users.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+
+    <!-- Your Firebase Config -->
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +32,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -138,7 +148,7 @@
         </div>
     </div>
 
-    <!-- Add User Modal (Same style as Patients) -->
+    <!-- Add User Modal -->
     <div class="modal" id="addUserModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -149,30 +159,43 @@
                 <form id="userForm">
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Select Staff Member *</label>
+                            <select id="staffId" required onchange="updateStaffInfo()">
+                                <option value="">Select Staff</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Username *</label>
                             <input type="text" id="username" required placeholder="e.g., jdelacruz">
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Password *</label>
                             <input type="password" id="password" required placeholder="Enter password">
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="name" required placeholder="e.g., Juan Dela Cruz">
-                        </div>
-                        <div class="form-group">
-                            <label>Position *</label>
-                            <input type="text" id="position" required placeholder="e.g., BNS Worker">
+                            <label>Confirm Password *</label>
+                            <input type="password" id="confirmPassword" required placeholder="Confirm password">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Department *</label>
-                            <input type="text" id="department" required placeholder="e.g., Health Center">
+                            <label>Full Name</label>
+                            <input type="text" id="name" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
+                        </div>
+                        <div class="form-group">
+                            <label>Position</label>
+                            <input type="text" id="position" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="department" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
                         </div>
                         <div class="form-group">
                             <label>Access Level *</label>
@@ -182,6 +205,7 @@
                                 <option value="BNS Worker">BNS Worker</option>
                                 <option value="Nurse">Nurse</option>
                                 <option value="Nutritionist">Nutritionist</option>
+                                <option value="Doctor">Doctor</option>
                                 <option value="Staff">Staff</option>
                                 <option value="View Only">View Only</option>
                             </select>

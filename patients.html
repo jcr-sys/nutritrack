@@ -1,3 +1,4 @@
+<!-- patients.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,15 @@
     <title>NutriTrack PH - Patients</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/patients.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+
+    <!-- Your Firebase Config -->
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +32,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -100,6 +110,7 @@
                             <option value="first_name">First Name</option>
                             <option value="age">Age</option>
                             <option value="patient_type">Patient Type</option>
+                            <option value="primary_doctor_id">Doctor ID</option>
                         </select>
                     </div>
                 </div>
@@ -124,7 +135,8 @@
                                     <th>Mobile Number</th>
                                     <th>Blood Type</th>
                                     <th>Allergy</th>
-                                    <th>Primary Doctor ID</th>
+                                    <th>Doctor ID</th>
+                                    <th>Doctor Name</th>
                                     <th>Patient Type</th>
                                     <th>Actions</th>
                                 </tr>
@@ -144,7 +156,7 @@
         </div>
     </div>
 
-    <!-- Add Patient Modal -->
+    <!-- Add Patient Modal (Updated Primary Doctor Section) -->
     <div class="modal" id="addPatientModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -174,9 +186,16 @@
                             <input type="text" id="suffix" placeholder="Jr., Sr., III">
                         </div>
                         <div class="form-group">
-                            <label>Age *</label>
-                            <input type="number" id="age" min="0" required>
+                            <label>Birthdate *</label>
+                            <input type="date" id="birthdate" required onchange="calculateAge()">
                         </div>
+                        <div class="form-group">
+                            <label>Age *</label>
+                            <input type="number" id="age" min="0" required readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Gender *</label>
                             <select id="gender" required>
@@ -184,13 +203,6 @@
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Birthdate *</label>
-                            <input type="date" id="birthdate" required>
                         </div>
                         <div class="form-group">
                             <label>Religion</label>
@@ -228,13 +240,19 @@
                             <label>Allergy</label>
                             <input type="text" id="allergy" placeholder="e.g., Peanuts, Penicillin">
                         </div>
-                        <div class="form-group">
-                            <label>Primary Doctor ID</label>
-                            <input type="text" id="primaryDoctorId" value="1">
-                        </div>
                     </div>
                     
                     <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary Doctor ID *</label>
+                            <select id="primaryDoctorId" required onchange="updateDoctorNameDisplay()">
+                                <option value="">Select Doctor ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
+                        </div>
                         <div class="form-group">
                             <label>Patient Type *</label>
                             <select id="patientType" required>

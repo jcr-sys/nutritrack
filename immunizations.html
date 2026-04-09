@@ -1,3 +1,4 @@
+<!-- immunizations.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,13 @@
     <title>NutriTrack PH - Child Immunizations</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/immunizations.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -88,16 +96,15 @@
                 <!-- Fixed Search/Sort Section (Identical to Patients) -->
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="immunizationSearch" placeholder="Find by Patient ID, Vaccine ID, or Doctor ID...">
+                        <input type="text" id="immunizationSearch" placeholder="Find by Patient ID, Vaccine, or Doctor ID...">
                         <button onclick="searchImmunizations()">🔍</button>
                     </div>
                     
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
                         <select id="sortBy" onchange="sortImmunizations()">
-                            <option value="immunization_id">Immunization ID</option>
                             <option value="patient_id">Patient ID</option>
-                            <option value="vaccine_id">Vaccine ID</option>
+                            <option value="vaccine_name">Vaccine Name</option>
                             <option value="dose_number">Dose Number</option>
                             <option value="date_given">Date Given</option>
                             <option value="doctor_id">Doctor ID</option>
@@ -105,18 +112,20 @@
                     </div>
                 </div>
                 
-                <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
+                <!-- Table Container -->
                 <div class="table-container">
                     <div class="table-wrapper">
                         <table class="immunizations-table">
                             <thead>
                                 <tr>
-                                    <th>Immunization ID</th>
                                     <th>Patient ID</th>
-                                    <th>Vaccine ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Vaccine</th>
+                                    <th>Qty</th>
                                     <th>Dose Number</th>
                                     <th>Date Given</th>
                                     <th>Doctor ID</th>
+                                    <th>Doctor Name</th>
                                     <th>Remarks</th>
                                     <th>Actions</th>
                                 </tr>
@@ -136,7 +145,7 @@
         </div>
     </div>
 
-    <!-- Add Immunization Modal (Same style as Patients) -->
+    <!-- Add Immunization Modal (Updated with Quantity) -->
     <div class="modal" id="addImmunizationModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -148,19 +157,112 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Patient ID *</label>
-                            <input type="text" id="patientId" required placeholder="e.g., 1011">
+                            <select id="patientId" required onchange="updatePatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
                         </div>
                         <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="patientNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Patient name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Vaccine ID *</label>
-                            <select id="vaccineId" required>
-                                <option value="">Select Vaccine</option>
-                                <option value="1">1 - BCG</option>
-                                <option value="2">2 - Hepatitis B</option>
-                                <option value="3">3 - DPT</option>
-                                <option value="4">4 - Oral Polio</option>
-                                <option value="5">5 - IPV</option>
-                                <option value="6">6 - MMR</option>
+                            <select id="vaccineId" required onchange="updateVaccineNameDisplay()">
+                                <option value="">Select Vaccine ID</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vaccine Name</label>
+                            <input type="text" id="vaccineNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Vaccine name will appear here">
+                        </div>
+                    </div>
+                    
+                    <!-- NEW: Quantity Field -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="quantity" min="1" value="1" required placeholder="Number of doses to administer">
+                        </div>
+                        <div class="form-group">
+                            <label>Available Stock</label>
+                            <input type="text" id="availableStockDisplay" readonly style="background-color: #f0f0f0;" placeholder="Stock will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dose Number *</label>
+                            <input type="number" id="doseNumber" min="1" required placeholder="e.g., 1">
+                        </div>
+                        <div class="form-group">
+                            <label>Date Given *</label>
+                            <input type="date" id="dateGiven" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doctor ID *</label>
+                            <select id="doctorId" required onchange="updateDoctorNameDisplay()">
+                                <option value="">Select Doctor ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="remarks" rows="3" placeholder="e.g., No adverse reactions, Mild fever noted, etc."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideAddImmunizationModal()">Cancel</button>
+                <button class="save-btn" onclick="saveImmunization()">Save Immunization</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Immunization Modal (Updated Vaccine Section) -->
+    <div class="modal" id="addImmunizationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Record Child Immunization</h2>
+                <button class="close-modal" onclick="hideAddImmunizationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="immunizationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <select id="patientId" required onchange="updatePatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="patientNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Patient name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vaccine ID *</label>
+                            <select id="vaccineId" required onchange="updateVaccineNameDisplay()">
+                                <option value="">Select Vaccine ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vaccine Name</label>
+                            <input type="text" id="vaccineNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Vaccine name will appear here">
                         </div>
                     </div>
                     

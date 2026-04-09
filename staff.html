@@ -1,3 +1,4 @@
+<!-- staff.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,13 @@
     <title>NutriTrack PH - Staff</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/staff.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -22,7 +30,7 @@
             </div>
             
             <div class="user-profile">
-                <span class="user-name" id="userName">Maria Santos</span>
+                <span class="user-name" id="userName">Roxanne Pagaduan</span>
                 <div class="avatar">👤</div>
             </div>
         </div>
@@ -115,6 +123,7 @@
                                     <th>First Name</th>
                                     <th>Middle Name</th>
                                     <th>Specialty</th>
+                                    <th>Department</th>
                                     <th>License Number</th>
                                     <th>Phone Number</th>
                                     <th>Address</th>
@@ -165,11 +174,19 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Specialty *</label>
-                            <input type="text" id="specialty" required placeholder="e.g., Pediatrics">
+                            <select id="specialty" required>
+                                <option value="">Select Specialty</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+                                <option value="Geriatrics">Geriatrics</option>
+                                <option value="BNS Worker">BNS Worker</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="IT">IT</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>License Number *</label>
-                            <input type="text" id="licenseNumber" required placeholder="e.g., FILIO123">
+                            <input type="text" id="licenseNumber" required placeholder="e.g., LICENSE123">
                         </div>
                     </div>
                     
@@ -186,9 +203,24 @@
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Department *</label>
+                            <select id="department" required>
+                                <option value="">Select Department</option>
+                                <option value="Nursing">Nursing</option>
+                                <option value="BNS">BNS</option>
+                                <option value="Pediatrics Department">Pediatrics Department</option>
+                                <option value="Obstetrics Department">Obstetrics Department</option>
+                                <option value="Geriatrics Department">Geriatrics Department</option>
+                                <option value="IT Department">IT Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Date Joined</label>
                             <input type="date" id="dateJoined">
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Salary</label>
                             <input type="number" id="salary" step="1000" placeholder="e.g., 70000">

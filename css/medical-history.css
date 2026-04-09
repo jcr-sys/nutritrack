@@ -1,3 +1,4 @@
+/* medical-history.css */
 /* ===== MEDICAL HISTORY PAGE SPECIFIC STYLES ===== */
 
 .content-area {
@@ -341,6 +342,21 @@
     border-radius: 5px;
     cursor: pointer;
     font-weight: 600;
+}
+
+/* Status button styles */
+.status-btn {
+    background: #ff9800;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.status-btn:hover {
+    background: #f57c00;
 }
 
 .cancel-btn:hover {

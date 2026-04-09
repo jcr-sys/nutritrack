@@ -1,120 +1,72 @@
-// ===== APPOINTMENT SCHEDULING PAGE FUNCTIONALITY =====
+// appointments.js
+// ===== APPOINTMENT SCHEDULING PAGE WITH FIREBASE =====
 
-// Sample appointment data
-let appointments = [
-    {
-        appointment_id: 'A001',
-        patient_id: '1002',
-        appointment_date: '2026-03-19',
-        appointment_time: '09:00',
-        purpose: 'Prenatal Checkup',
-        status: 'Confirmed',
-        priority: 'Prenatal Priority',
-        remarks: 'Regular monthly checkup'
-    },
-    {
-        appointment_id: 'A002',
-        patient_id: '1011',
-        appointment_date: '2026-03-19',
-        appointment_time: '10:30',
-        purpose: 'Child Immunization',
-        status: 'Scheduled',
-        priority: 'Normal',
-        remarks: '1st dose DPT vaccine'
-    },
-    {
-        appointment_id: 'A003',
-        patient_id: '1003',
-        appointment_date: '2026-03-19',
-        appointment_time: '14:00',
-        purpose: 'Senior Checkup',
-        status: 'Scheduled',
-        priority: 'Normal',
-        remarks: 'Blood pressure monitoring'
-    },
-    {
-        appointment_id: 'A004',
-        patient_id: '1006',
-        appointment_date: '2026-03-20',
-        appointment_time: '09:30',
-        purpose: 'Prenatal Checkup',
-        status: 'Scheduled',
-        priority: 'Prenatal Priority',
-        remarks: '2nd trimester ultrasound'
-    },
-    {
-        appointment_id: 'A005',
-        patient_id: '1013',
-        appointment_date: '2026-03-20',
-        appointment_time: '11:00',
-        purpose: 'Nutrition Counseling',
-        status: 'Confirmed',
-        priority: 'Normal',
-        remarks: 'Follow-up for malnourished child'
-    },
-    {
-        appointment_id: 'A006',
-        patient_id: '1008',
-        appointment_date: '2026-03-18',
-        appointment_time: '13:30',
-        purpose: 'Prenatal Checkup',
-        status: 'Completed',
-        priority: 'Prenatal Priority',
-        remarks: 'Regular checkup - all normal'
-    },
-    {
-        appointment_id: 'A007',
-        patient_id: '1001',
-        appointment_date: '2026-03-18',
-        appointment_time: '15:00',
-        purpose: 'Senior Checkup',
-        status: 'No Show',
-        priority: 'Normal',
-        remarks: 'Patient did not arrive'
-    },
-    {
-        appointment_id: 'A008',
-        patient_id: '1014',
-        appointment_date: '2026-03-21',
-        appointment_time: '08:30',
-        purpose: 'Child Immunization',
-        status: 'Scheduled',
-        priority: 'Normal',
-        remarks: 'BCG vaccine'
-    },
-    {
-        appointment_id: 'A009',
-        patient_id: '1007',
-        appointment_date: '2026-03-21',
-        appointment_time: '10:00',
-        purpose: 'Prenatal Checkup',
-        status: 'Confirmed',
-        priority: 'Prenatal Priority',
-        remarks: 'Glucose screening'
-    },
-    {
-        appointment_id: 'A010',
-        patient_id: '1005',
-        appointment_date: '2026-03-22',
-        appointment_time: '09:15',
-        purpose: 'General Consultation',
-        status: 'Scheduled',
-        priority: 'Normal',
-        remarks: 'Medication refill'
-    }
-];
+let allAppointments = [];
+let allPatients = [];
+let selectedAppointmentId = null;
+let selectedCurrentStatus = null;
 
 // Display current date
 function displayCurrentDate() {
     const dateElement = document.getElementById('currentDate');
     if (dateElement) {
         const today = new Date();
-        const options = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        };
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
         dateElement.textContent = today.toLocaleDateString('en-US', options);
+    }
+}
+
+// Load ALL patients for dropdown
+async function loadPatientsForDropdown() {
+    try {
+        const patientSelect = document.getElementById('patientId');
+        if (!patientSelect) return;
+        
+        patientSelect.innerHTML = '<option value="">Loading...</option>';
+        allPatients = [];
+        
+        const snapshot = await db.collection('patients').orderBy('patient_id').get();
+        
+        patientSelect.innerHTML = '<option value="">Select Patient ID</option>';
+        
+        if (snapshot.empty) {
+            patientSelect.innerHTML = '<option value="">No patients found</option>';
+            return;
+        }
+        
+        snapshot.forEach(doc => {
+            const patient = doc.data();
+            allPatients.push(patient);
+            const option = document.createElement('option');
+            option.value = patient.patient_id;
+            option.textContent = patient.patient_id;
+            patientSelect.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error("Error loading patients:", error);
+        const patientSelect = document.getElementById('patientId');
+        if (patientSelect) {
+            patientSelect.innerHTML = '<option value="">Error loading patients</option>';
+        }
+    }
+}
+
+// Update patient name display when patient selected
+function updatePatientNameDisplay() {
+    const patientSelect = document.getElementById('patientId');
+    const patientNameDisplay = document.getElementById('patientNameDisplay');
+    const selectedValue = patientSelect.value;
+    
+    if (selectedValue && allPatients.length > 0) {
+        const patient = allPatients.find(p => p.patient_id === selectedValue);
+        if (patient) {
+            patientNameDisplay.value = `${patient.first_name} ${patient.last_name}`;
+        } else {
+            patientNameDisplay.value = '';
+        }
+    } else {
+        patientNameDisplay.value = '';
     }
 }
 
@@ -139,63 +91,134 @@ function getPriorityBadgeClass(priority) {
     }
 }
 
-// Load appointments into table
-function loadAppointments() {
+// Open status update modal
+function openStatusModal(appointmentId, currentStatus) {
+    selectedAppointmentId = appointmentId;
+    selectedCurrentStatus = currentStatus;
+    
+    document.getElementById('currentStatusDisplay').value = currentStatus;
+    document.getElementById('newStatusSelect').value = '';
+    document.getElementById('statusModal').classList.add('show');
+}
+
+// Close status modal
+function closeStatusModal() {
+    document.getElementById('statusModal').classList.remove('show');
+    selectedAppointmentId = null;
+    selectedCurrentStatus = null;
+}
+
+// Confirm and update status
+async function confirmStatusUpdate() {
+    const newStatus = document.getElementById('newStatusSelect').value;
+    
+    if (!newStatus) {
+        alert('Please select a new status');
+        return;
+    }
+    
+    if (newStatus === selectedCurrentStatus) {
+        alert('New status is the same as current status. No change made.');
+        closeStatusModal();
+        return;
+    }
+    
+    if (confirm(`Change status from "${selectedCurrentStatus}" to "${newStatus}"?`)) {
+        try {
+            await db.collection('appointments').doc(selectedAppointmentId).update({
+                status: newStatus,
+                updated_at: new Date().toISOString()
+            });
+            alert(`Status updated to "${newStatus}" successfully!`);
+            await loadAppointments();
+            closeStatusModal();
+        } catch (error) {
+            console.error("Error updating status:", error);
+            alert("Error updating status. Please try again.");
+        }
+    }
+}
+
+// Load appointments from Firestore
+async function loadAppointments() {
     const tableBody = document.getElementById('appointmentsTableBody');
     if (!tableBody) return;
     
-    tableBody.innerHTML = '';
-    
-    appointments.forEach(app => {
-        const row = document.createElement('tr');
+    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Loading appointments...<\/div>';
+
+    try {
+        const snapshot = await db.collection('appointments').orderBy('appointment_date', 'desc').get();
         
-        // Create status badge
-        const statusBadge = `<span class="status-badge ${getStatusBadgeClass(app.status)}">${app.status}</span>`;
+        if (snapshot.empty) {
+            tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No appointments found. Click "+ New Appointment" to add.<\/div>';
+            allAppointments = [];
+            return;
+        }
         
-        // Create priority badge if exists
-        const priorityBadge = app.priority && app.priority !== 'Normal' 
-            ? `<span class="priority-badge ${getPriorityBadgeClass(app.priority)}">${app.priority}</span>` 
-            : '';
+        allAppointments = [];
+        tableBody.innerHTML = '';
         
-        row.innerHTML = `
-            <td>${app.appointment_id}</td>
-            <td>${app.patient_id}</td>
-            <td>${app.appointment_date}</td>
-            <td>${app.appointment_time}</td>
-            <td>${app.purpose} ${priorityBadge}</td>
-            <td>${statusBadge}</td>
-            <td>${app.remarks || '-'}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="view-btn" onclick="viewAppointment('${app.appointment_id}')">View</button>
-                    <button class="edit-btn" onclick="editAppointment('${app.appointment_id}')">Edit</button>
-                    ${app.status !== 'Completed' && app.status !== 'Cancelled' ? 
-                        `<button class="cancel-appointment-btn" onclick="cancelAppointment('${app.appointment_id}')">Cancel</button>` : ''}
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+        snapshot.forEach(doc => {
+            const appointment = doc.data();
+            allAppointments.push(appointment);
+            
+            // Get patient name
+            let patientName = '-';
+            const patient = allPatients.find(p => p.patient_id === appointment.patient_id);
+            if (patient) {
+                patientName = `${patient.first_name} ${patient.last_name}`;
+            }
+            
+            const statusBadge = `<span class="status-badge ${getStatusBadgeClass(appointment.status)}">${appointment.status}</span>`;
+            const priorityBadge = appointment.priority && appointment.priority !== 'Normal' 
+                ? `<span class="priority-badge ${getPriorityBadgeClass(appointment.priority)}">${appointment.priority}</span>` 
+                : '';
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${appointment.appointment_id || '-'}<\/div>
+                <td>${appointment.patient_id || '-'}<\/div>
+                <td>${patientName}<\/div>
+                <td>${appointment.appointment_date || '-'}<\/div>
+                <td>${appointment.appointment_time || '-'}<\/div>
+                <td>${appointment.purpose || '-'} ${priorityBadge}<\/div>
+                <td>${statusBadge}<\/div>
+                <td>${appointment.remarks || '-'}<\/div>
+                <td>
+                    <div class="action-buttons">
+                        <button class="view-btn" onclick="viewAppointment('${appointment.appointment_id}')">View</button>
+                        <button class="edit-btn" onclick="editAppointment('${appointment.appointment_id}')">Edit</button>
+                        <button class="status-update-btn" onclick="openStatusModal('${appointment.appointment_id}', '${appointment.status}')">Update Status</button>
+                        ${appointment.status !== 'Completed' && appointment.status !== 'Cancelled' ? 
+                            `<button class="cancel-appointment-btn" onclick="cancelAppointment('${appointment.appointment_id}')">Cancel</button>` : ''}
+                    </div>
+                <\/div>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading appointments:", error);
+        tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">Error loading data. Please check your connection.<\/div>';
+    }
 }
 
 // Search appointments
 function searchAppointments() {
     const searchTerm = document.getElementById('appointmentSearch').value.toLowerCase();
-    const filteredAppointments = appointments.filter(app => 
+    const filteredAppointments = allAppointments.filter(app => 
         app.appointment_id.toLowerCase().includes(searchTerm) ||
         app.patient_id.toLowerCase().includes(searchTerm) ||
-        app.purpose.toLowerCase().includes(searchTerm) ||
-        app.status.toLowerCase().includes(searchTerm) ||
+        (app.purpose && app.purpose.toLowerCase().includes(searchTerm)) ||
+        (app.status && app.status.toLowerCase().includes(searchTerm)) ||
         (app.remarks && app.remarks.toLowerCase().includes(searchTerm))
     );
-    
     displayFilteredAppointments(filteredAppointments);
 }
 
 // Sort appointments
 function sortAppointments() {
     const sortBy = document.getElementById('sortBy').value;
-    const sortedAppointments = [...appointments].sort((a, b) => {
+    const sortedAppointments = [...allAppointments].sort((a, b) => {
         let valA = a[sortBy] || '';
         let valB = b[sortBy] || '';
         
@@ -210,7 +233,6 @@ function sortAppointments() {
         }
         return String(valA).localeCompare(String(valB));
     });
-    
     displayFilteredAppointments(sortedAppointments);
 }
 
@@ -222,37 +244,53 @@ function displayFilteredAppointments(appList) {
     tableBody.innerHTML = '';
     
     appList.forEach(app => {
-        const row = document.createElement('tr');
+        let patientName = '-';
+        const patient = allPatients.find(p => p.patient_id === app.patient_id);
+        if (patient) {
+            patientName = `${patient.first_name} ${patient.last_name}`;
+        }
         
         const statusBadge = `<span class="status-badge ${getStatusBadgeClass(app.status)}">${app.status}</span>`;
         const priorityBadge = app.priority && app.priority !== 'Normal' 
             ? `<span class="priority-badge ${getPriorityBadgeClass(app.priority)}">${app.priority}</span>` 
             : '';
         
+        const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${app.appointment_id}</td>
-            <td>${app.patient_id}</td>
-            <td>${app.appointment_date}</td>
-            <td>${app.appointment_time}</td>
-            <td>${app.purpose} ${priorityBadge}</td>
-            <td>${statusBadge}</td>
-            <td>${app.remarks || '-'}</td>
+            <td>${app.appointment_id || '-'}<\/div>
+            <td>${app.patient_id || '-'}<\/div>
+            <td>${patientName}<\/div>
+            <td>${app.appointment_date || '-'}<\/div>
+            <td>${app.appointment_time || '-'}<\/div>
+            <td>${app.purpose || '-'} ${priorityBadge}<\/div>
+            <td>${statusBadge}<\/div>
+            <td>${app.remarks || '-'}<\/div>
             <td>
                 <div class="action-buttons">
                     <button class="view-btn" onclick="viewAppointment('${app.appointment_id}')">View</button>
                     <button class="edit-btn" onclick="editAppointment('${app.appointment_id}')">Edit</button>
+                    <button class="status-update-btn" onclick="openStatusModal('${app.appointment_id}', '${app.status}')">Update Status</button>
                     ${app.status !== 'Completed' && app.status !== 'Cancelled' ? 
                         `<button class="cancel-appointment-btn" onclick="cancelAppointment('${app.appointment_id}')">Cancel</button>` : ''}
                 </div>
-            </td>
+            <\/div>
         `;
         tableBody.appendChild(row);
     });
 }
 
+// Generate new appointment ID
+function generateAppointmentId() {
+    if (allAppointments.length === 0) return 'A001';
+    const lastId = allAppointments[allAppointments.length - 1].appointment_id;
+    const num = parseInt(lastId.substring(1)) + 1;
+    return 'A' + String(num).padStart(3, '0');
+}
+
 // Show add appointment modal
 function showAddAppointmentModal() {
     document.getElementById('addAppointmentModal').classList.add('show');
+    loadPatientsForDropdown();
 }
 
 // Hide add appointment modal
@@ -264,19 +302,12 @@ function hideAddAppointmentModal() {
 // Clear appointment form
 function clearAppointmentForm() {
     document.getElementById('appointmentForm').reset();
+    document.getElementById('patientNameDisplay').value = '';
 }
 
-// Generate new appointment ID
-function generateAppointmentId() {
-    const lastId = appointments[appointments.length - 1].appointment_id;
-    const num = parseInt(lastId.substring(1)) + 1;
-    return 'A' + String(num).padStart(3, '0');
-}
-
-// Save new appointment
-function saveAppointment() {
-    // Get form values
-    const patientId = document.getElementById('patientId').value.trim();
+// Save new appointment to Firestore
+async function saveAppointment() {
+    const patientId = document.getElementById('patientId').value;
     const appointmentDate = document.getElementById('appointmentDate').value;
     const appointmentTime = document.getElementById('appointmentTime').value;
     const purpose = document.getElementById('purpose').value;
@@ -284,68 +315,89 @@ function saveAppointment() {
     const priority = document.getElementById('priority').value;
     const remarks = document.getElementById('remarks').value.trim();
     
-    // Validate required fields
     if (!patientId || !appointmentDate || !appointmentTime || !purpose || !status) {
         alert('Please fill in all required fields');
         return;
     }
     
-    // Create new appointment object
+    const appointmentId = generateAppointmentId();
+    
+    // Get patient name
+    let patientName = '';
+    const patient = allPatients.find(p => p.patient_id === patientId);
+    if (patient) {
+        patientName = `${patient.first_name} ${patient.last_name}`;
+    }
+    
     const newAppointment = {
-        appointment_id: generateAppointmentId(),
+        appointment_id: appointmentId,
         patient_id: patientId,
+        patient_name: patientName,
         appointment_date: appointmentDate,
         appointment_time: appointmentTime,
         purpose: purpose,
         status: status,
         priority: priority || 'Normal',
-        remarks: remarks || null
+        remarks: remarks || null,
+        created_at: new Date().toISOString()
     };
     
-    // Add to appointments array
-    appointments.push(newAppointment);
-    
-    // Reload table
-    loadAppointments();
-    
-    // Hide modal
-    hideAddAppointmentModal();
-    
-    alert(`Appointment ${newAppointment.appointment_id} scheduled successfully for Patient ${patientId}`);
+    try {
+        await db.collection('appointments').doc(appointmentId).set(newAppointment);
+        alert(`Appointment ${appointmentId} scheduled successfully for Patient ${patientId}`);
+        await loadAppointments();
+        hideAddAppointmentModal();
+    } catch (error) {
+        console.error("Error saving appointment:", error);
+        alert("Error saving appointment. Please try again.");
+    }
 }
 
 // View appointment
 function viewAppointment(appointmentId) {
-    const appointment = appointments.find(a => a.appointment_id === appointmentId);
+    const appointment = allAppointments.find(a => a.appointment_id === appointmentId);
     if (appointment) {
-        alert(`Appointment Details:
+        let patientName = '-';
+        const patient = allPatients.find(p => p.patient_id === appointment.patient_id);
+        if (patient) {
+            patientName = `${patient.first_name} ${patient.last_name}`;
+        }
+        
+        alert(`APPOINTMENT DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ID: ${appointment.appointment_id}
-Patient ID: ${appointment.patient_id}
+Patient: ${patientName} (ID: ${appointment.patient_id})
 Date: ${appointment.appointment_date}
 Time: ${appointment.appointment_time}
 Purpose: ${appointment.purpose}
 Status: ${appointment.status}
 Priority: ${appointment.priority || 'Normal'}
-Remarks: ${appointment.remarks || 'N/A'}`);
+Remarks: ${appointment.remarks || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     }
 }
 
 // Edit appointment
 function editAppointment(appointmentId) {
-    const appointment = appointments.find(a => a.appointment_id === appointmentId);
-    if (appointment) {
-        alert(`Edit appointment ${appointmentId}\n\nThis feature will be implemented in the next phase.`);
-    }
+    alert(`Edit appointment ${appointmentId}\n\nThis feature will be implemented in the next phase.`);
 }
 
-// Cancel appointment
-function cancelAppointment(appointmentId) {
-    const appointment = appointments.find(a => a.appointment_id === appointmentId);
+// Cancel appointment from Firestore
+async function cancelAppointment(appointmentId) {
+    const appointment = allAppointments.find(a => a.appointment_id === appointmentId);
     if (appointment) {
         if (confirm(`Cancel appointment ${appointmentId} for Patient ${appointment.patient_id}?`)) {
-            appointment.status = 'Cancelled';
-            loadAppointments();
-            alert(`Appointment ${appointmentId} has been cancelled.`);
+            try {
+                await db.collection('appointments').doc(appointmentId).update({
+                    status: 'Cancelled',
+                    updated_at: new Date().toISOString()
+                });
+                alert(`Appointment ${appointmentId} has been cancelled.`);
+                await loadAppointments();
+            } catch (error) {
+                console.error("Error cancelling appointment:", error);
+                alert("Error cancelling appointment. Please try again.");
+            }
         }
     }
 }
@@ -355,10 +407,12 @@ document.addEventListener('DOMContentLoaded', function() {
     displayCurrentDate();
     loadAppointments();
     
-    // Add search on enter key
-    document.getElementById('appointmentSearch')?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchAppointments();
-        }
-    });
+    const searchInput = document.getElementById('appointmentSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchAppointments();
+            }
+        });
+    }
 });

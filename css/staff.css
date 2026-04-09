@@ -1,11 +1,12 @@
+/* staff.css */
 /* ===== STAFF PAGE SPECIFIC STYLES ===== */
 
 .content-area {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 70px); /* Full height minus header */
+    height: calc(100vh - 70px);
     padding: 20px 30px;
-    overflow: hidden; /* Prevent content area scrolling */
+    overflow: hidden;
 }
 
 .staff-header {
@@ -13,13 +14,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
 }
 
 .page-title {
     margin-bottom: 0;
     font-size: 40px;
     font-weight: bold;
+    color: #2B6896;
 }
 
 .add-staff-btn {
@@ -125,7 +127,7 @@
 .staff-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1400px; /* Ensures horizontal scroll */
+    min-width: 1500px;
 }
 
 .staff-table th {
@@ -153,17 +155,77 @@
     background: #f5f5f5;
 }
 
-/* Specialty badge */
+/* ===== SPECIALTY BADGES - TEXT ONLY ===== */
 .specialty-badge {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     display: inline-block;
 }
 
+.specialty-pediatrics {
+    color: #1976d2;
+}
+
+.specialty-obgyn {
+    color: #e91e63;
+}
+
+.specialty-geriatrics {
+    color: #607d8b;
+}
+
+.specialty-bns {
+    color: #2e7d32;
+}
+
+.specialty-nurse {
+    color: #ff9800;
+}
+
+.specialty-it {
+    color: #9c27b0;
+}
+
+.specialty-default {
+    color: #2B6896;
+}
+
+/* ===== DEPARTMENT BADGES - TEXT ONLY ===== */
+.dept-badge {
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.dept-nursing {
+    color: #1976d2;
+}
+
+.dept-bns {
+    color: #2e7d32;
+}
+
+.dept-pediatrics {
+    color: #e91e63;
+}
+
+.dept-obstetrics {
+    color: #9c27b0;
+}
+
+.dept-geriatrics {
+    color: #607d8b;
+}
+
+.dept-it {
+    color: #ff9800;
+}
+
+.dept-default {
+    color: #2B6896;
+}
+
+/* Action Buttons */
 .action-buttons {
     display: flex;
     gap: 5px;
@@ -338,6 +400,15 @@
 
 .cancel-btn:hover {
     background: #5a6268;
+}
+
+select {
+    cursor: pointer;
+    background-color: white;
+}
+
+select option {
+    padding: 8px;
 }
 
 /* Responsive */

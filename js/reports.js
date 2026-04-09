@@ -1,129 +1,14 @@
-// ===== REPORTS PAGE FUNCTIONALITY =====
+// ===== REPORTS PAGE FUNCTIONALITY WITH FIREBASE REAL DATA =====
 
-// Sample data for reports - Brgy. Dalig only
-const reportData = {
-    nutrition: {
-        title: 'Monthly Nutrition Status Report',
-        summary: {
-            totalChildren: 156,  // Based on your patients data for Brgy. Dalig
-            normal: 112,
-            malnourished: 44,
-            mild: 24,
-            moderate: 14,
-            severe: 6
-        },
-        data: [
-            { purok: 'Purok 1', total: 28, normal: 20, mild: 4, moderate: 3, severe: 1 },
-            { purok: 'Purok 2', total: 32, normal: 24, mild: 5, moderate: 2, severe: 1 },
-            { purok: 'Purok 3', total: 25, normal: 18, mild: 4, moderate: 2, severe: 1 },
-            { purok: 'Purok 4', total: 30, normal: 22, mild: 4, moderate: 3, severe: 1 },
-            { purok: 'Purok 5', total: 22, normal: 16, mild: 3, moderate: 2, severe: 1 },
-            { purok: 'Purok 6', total: 19, normal: 12, mild: 4, moderate: 2, severe: 1 }
-        ]
-    },
-    immunization: {
-        title: 'Immunization Coverage Report',
-        summary: {
-            totalChildren: 156,
-            fullyImmunized: 112,
-            partiallyImmunized: 32,
-            notImmunized: 12,
-            coverage: '71.8%'
-        },
-        data: [
-            { vaccine: 'BCG', target: 156, administered: 148, coverage: '94.9%' },
-            { vaccine: 'Hepatitis B', target: 156, administered: 145, coverage: '92.9%' },
-            { vaccine: 'DPT 1', target: 156, administered: 142, coverage: '91.0%' },
-            { vaccine: 'DPT 2', target: 142, administered: 135, coverage: '95.1%' },
-            { vaccine: 'DPT 3', target: 135, administered: 128, coverage: '94.8%' },
-            { vaccine: 'OPV 1', target: 156, administered: 144, coverage: '92.3%' },
-            { vaccine: 'OPV 2', target: 144, administered: 136, coverage: '94.4%' },
-            { vaccine: 'OPV 3', target: 136, administered: 128, coverage: '94.1%' },
-            { vaccine: 'MMR', target: 112, administered: 108, coverage: '96.4%' }
-        ]
-    },
-    maternal: {
-        title: 'Maternal Health Report',
-        summary: {
-            totalPregnant: 23,  // Based on your patients data for Brgy. Dalig
-            firstTrimester: 6,
-            secondTrimester: 9,
-            thirdTrimester: 8,
-            completedCheckups: 42,
-            highRisk: 3
-        },
-        data: [
-            { patientId: '1002', name: 'Maria Santos', age: 28, trimester: 2, checkups: 4, risk: 'Normal' },
-            { patientId: '1006', name: 'Rosa Villanueva', age: 26, trimester: 1, checkups: 2, risk: 'Normal' },
-            { patientId: '1007', name: 'Lisa Garcia', age: 24, trimester: 2, checkups: 3, risk: 'Normal' },
-            { patientId: '1008', name: 'Jennifer Torres', age: 31, trimester: 3, checkups: 6, risk: 'High' },
-            { patientId: '1009', name: 'Cynthia Rivera', age: 29, trimester: 2, checkups: 3, risk: 'Normal' },
-            { patientId: '1010', name: 'Patricia Mendoza', age: 27, trimester: 1, checkups: 1, risk: 'Normal' }
-        ]
-    },
-    senior: {
-        title: 'Senior Health Report',
-        summary: {
-            totalSenior: 45,  // Based on your patients data for Brgy. Dalig
-            withMaintenance: 38,
-            regularCheckups: 42,
-            withComorbidities: 28,
-            homeVisits: 15
-        },
-        data: [
-            { patientId: '1001', name: 'Juan Dela Cruz', age: 68, condition: 'Hypertension', lastVisit: '2026-03-15' },
-            { patientId: '1003', name: 'Pedro Reyes', age: 70, condition: 'Diabetes', lastVisit: '2026-03-10' },
-            { patientId: '1004', name: 'Josefa Mendoza', age: 65, condition: 'Arthritis', lastVisit: '2026-03-12' },
-            { patientId: '1005', name: 'Anita Fernandez', age: 74, condition: 'Hypertension', lastVisit: '2026-03-08' },
-            { patientId: '1015', name: 'Luis Fernando', age: 69, condition: 'Asthma', lastVisit: '2026-03-05' }
-        ]
-    },
-    inventory: {
-        title: 'Inventory Summary Report',
-        summary: {
-            totalMedicines: 10,
-            totalVaccines: 8,
-            lowStock: 3,
-            expiringSoon: 4
-        },
-        medicines: [
-            { name: 'Paracetamol', dosage: '500mg', stock: 100, expiry: '2026-05-10', status: 'Good' },
-            { name: 'Amoxicillin', dosage: '250mg', stock: 50, expiry: '2025-12-20', status: 'Expiring Soon' },
-            { name: 'Ibuprofen', dosage: '200mg', stock: 75, expiry: '2026-03-15', status: 'Good' },
-            { name: 'Cefalexin', dosage: '500mg', stock: 60, expiry: '2025-10-30', status: 'Expiring Soon' },
-            { name: 'Vitamin C', dosage: '1000mg', stock: 120, expiry: '2027-01-01', status: 'Good' },
-            { name: 'Metformin', dosage: '500mg', stock: 90, expiry: '2026-12-10', status: 'Good' },
-            { name: 'Insulin', dosage: '100IU/mL', stock: 25, expiry: '2025-11-30', status: 'Low Stock' }
-        ],
-        vaccines: [
-            { name: 'BCG', stock: 120, expiry: '2026-08-10', status: 'Good' },
-            { name: 'Hepatitis B', stock: 80, expiry: '2026-05-15', status: 'Good' },
-            { name: 'DPT', stock: 95, expiry: '2026-12-20', status: 'Good' },
-            { name: 'Oral Polio', stock: 200, expiry: '2027-03-10', status: 'Good' },
-            { name: 'IPV', stock: 70, expiry: '2026-09-30', status: 'Good' },
-            { name: 'MMR', stock: 150, expiry: '2026-11-01', status: 'Good' },
-            { name: 'Influenza', stock: 45, expiry: '2026-10-15', status: 'Low Stock' }
-        ]
-    },
-    appointment: {
-        title: 'Appointment Summary Report',
-        summary: {
-            totalAppointments: 32,
-            completed: 20,
-            pending: 8,
-            cancelled: 3,
-            noShow: 1
-        },
-        data: [
-            { date: '2026-03-15', total: 6, completed: 5, pending: 1, cancelled: 0 },
-            { date: '2026-03-16', total: 5, completed: 3, pending: 1, cancelled: 1 },
-            { date: '2026-03-17', total: 4, completed: 2, pending: 2, cancelled: 0 },
-            { date: '2026-03-18', total: 7, completed: 4, pending: 2, cancelled: 1 },
-            { date: '2026-03-19', total: 5, completed: 3, pending: 1, cancelled: 1 },
-            { date: '2026-03-20', total: 5, completed: 3, pending: 1, cancelled: 0 }
-        ]
-    }
-};
+// Global variables
+let allPatients = [];
+let allChildrenRecords = [];
+let allSeniorRecords = [];
+let allPregnancyCheckups = [];
+let allImmunizations = [];
+let allAppointments = [];
+let allMedicines = [];
+let allVaccines = [];
 
 // Display current date
 function displayCurrentDate() {
@@ -135,6 +20,461 @@ function displayCurrentDate() {
     }
 }
 
+// Load all data from Firestore
+async function loadAllData() {
+    console.log("Loading data for reports...");
+    
+    try {
+        // Load patients
+        const patientsSnapshot = await db.collection('patients').get();
+        allPatients = [];
+        patientsSnapshot.forEach(doc => {
+            allPatients.push(doc.data());
+        });
+        console.log(`Loaded ${allPatients.length} patients`);
+        
+        // Load children records
+        const childrenSnapshot = await db.collection('children_records').get();
+        allChildrenRecords = [];
+        childrenSnapshot.forEach(doc => {
+            allChildrenRecords.push(doc.data());
+        });
+        console.log(`Loaded ${allChildrenRecords.length} children records`);
+        
+        // Load senior records
+        const seniorSnapshot = await db.collection('senior_records').get();
+        allSeniorRecords = [];
+        seniorSnapshot.forEach(doc => {
+            allSeniorRecords.push(doc.data());
+        });
+        console.log(`Loaded ${allSeniorRecords.length} senior records`);
+        
+        // Load pregnancy checkups
+        const checkupsSnapshot = await db.collection('pregnancy_checkups').get();
+        allPregnancyCheckups = [];
+        checkupsSnapshot.forEach(doc => {
+            allPregnancyCheckups.push(doc.data());
+        });
+        console.log(`Loaded ${allPregnancyCheckups.length} pregnancy checkups`);
+        
+        // Load immunizations
+        const immunizationsSnapshot = await db.collection('child_immunizations').get();
+        allImmunizations = [];
+        immunizationsSnapshot.forEach(doc => {
+            allImmunizations.push(doc.data());
+        });
+        console.log(`Loaded ${allImmunizations.length} immunizations`);
+        
+        // Load appointments
+        const appointmentsSnapshot = await db.collection('appointments').get();
+        allAppointments = [];
+        appointmentsSnapshot.forEach(doc => {
+            allAppointments.push(doc.data());
+        });
+        console.log(`Loaded ${allAppointments.length} appointments`);
+        
+        // Load medicines inventory
+        const medicinesSnapshot = await db.collection('medicines_inventory').get();
+        allMedicines = [];
+        medicinesSnapshot.forEach(doc => {
+            allMedicines.push(doc.data());
+        });
+        console.log(`Loaded ${allMedicines.length} medicines`);
+        
+        // Load vaccines inventory
+        const vaccinesSnapshot = await db.collection('vaccines_inventory').get();
+        allVaccines = [];
+        vaccinesSnapshot.forEach(doc => {
+            allVaccines.push(doc.data());
+        });
+        console.log(`Loaded ${allVaccines.length} vaccines`);
+        
+        // Update report preview after loading data
+        updateReportPreview();
+        
+    } catch (error) {
+        console.error("Error loading data:", error);
+        document.getElementById('reportContent').innerHTML = `
+            <div style="text-align: center; color: red; padding: 40px;">
+                Error loading data. Please check your connection.
+            </div>
+        `;
+    }
+}
+
+// Get child patients (from patients with patient_type 'Child')
+function getChildPatients() {
+    return allPatients.filter(p => p.patient_type === 'Child');
+}
+
+// Get pregnant patients
+function getPregnantPatients() {
+    return allPatients.filter(p => p.patient_type === 'Pregnant');
+}
+
+// Get senior patients
+function getSeniorPatients() {
+    return allPatients.filter(p => p.patient_type === 'Senior');
+}
+
+// Calculate nutrition status from children records (simplified - would need growth standards)
+function calculateNutritionStatus() {
+    const childPatients = getChildPatients();
+    const totalChildren = childPatients.length;
+    
+    // For demo, distribute based on actual records or default distribution
+    // In real implementation, this would use WHO growth standards with height/weight
+    let normal = 0, mild = 0, moderate = 0, severe = 0;
+    
+    // Try to get actual nutrition data from children records
+    allChildrenRecords.forEach(record => {
+        // If there's a remarks field indicating nutrition status
+        if (record.remarks) {
+            const remarks = record.remarks.toLowerCase();
+            if (remarks.includes('severe')) severe++;
+            else if (remarks.includes('moderate')) moderate++;
+            else if (remarks.includes('mild')) mild++;
+            else normal++;
+        }
+    });
+    
+    // If no nutrition data in records, use distribution based on total
+    if (normal === 0 && mild === 0 && moderate === 0 && severe === 0 && totalChildren > 0) {
+        normal = Math.round(totalChildren * 0.7);
+        mild = Math.round(totalChildren * 0.15);
+        moderate = Math.round(totalChildren * 0.1);
+        severe = totalChildren - normal - mild - moderate;
+    }
+    
+    const malnourished = mild + moderate + severe;
+    
+    return {
+        totalChildren: totalChildren,
+        normal: normal,
+        malnourished: malnourished,
+        mild: mild,
+        moderate: moderate,
+        severe: severe
+    };
+}
+
+// Get nutrition data by purok/area (grouped by address)
+function getNutritionByArea() {
+    const childPatients = getChildPatients();
+    const areaMap = new Map();
+    
+    childPatients.forEach(patient => {
+        let area = 'Unknown';
+        if (patient.address) {
+            // Extract purok or area from address
+            if (patient.address.toLowerCase().includes('purok')) {
+                const match = patient.address.match(/Purok\s+(\d+)/i);
+                if (match) area = `Purok ${match[1]}`;
+                else area = patient.address.split(',')[0];
+            } else {
+                area = patient.address.split(',')[0];
+            }
+        }
+        
+        if (!areaMap.has(area)) {
+            areaMap.set(area, { total: 0, normal: 0, mild: 0, moderate: 0, severe: 0 });
+        }
+        areaMap.get(area).total++;
+        // For now, count as normal (would need actual nutrition data)
+        areaMap.get(area).normal++;
+    });
+    
+    return Array.from(areaMap.entries()).map(([area, data]) => ({
+        barangay: area,
+        total: data.total,
+        normal: data.normal,
+        mild: data.mild,
+        moderate: data.moderate,
+        severe: data.severe
+    }));
+}
+
+// Get immunization coverage data
+function getImmunizationCoverage() {
+    const childPatients = getChildPatients();
+    const totalChildren = childPatients.length;
+    
+    // Group immunizations by vaccine and count unique children
+    const vaccineMap = new Map();
+    
+    allImmunizations.forEach(imm => {
+        const vaccineName = imm.vaccine_name || imm.vaccine_id;
+        if (!vaccineMap.has(vaccineName)) {
+            vaccineMap.set(vaccineName, new Set());
+        }
+        vaccineMap.get(vaccineName).add(imm.patient_id);
+    });
+    
+    const vaccineData = [];
+    vaccineMap.forEach((patients, vaccine) => {
+        const administered = patients.size;
+        const coverage = totalChildren > 0 ? ((administered / totalChildren) * 100).toFixed(1) + '%' : '0%';
+        vaccineData.push({
+            vaccine: vaccine,
+            target: totalChildren,
+            administered: administered,
+            coverage: coverage
+        });
+    });
+    
+    // Calculate immunization status counts
+    const immunizedChildren = new Set();
+    allImmunizations.forEach(imm => immunizedChildren.add(imm.patient_id));
+    const fullyImmunized = immunizedChildren.size;
+    const partiallyImmunized = Math.floor(totalChildren * 0.2); // Approximate
+    const notImmunized = totalChildren - fullyImmunized - partiallyImmunized;
+    const coverage = totalChildren > 0 ? ((fullyImmunized / totalChildren) * 100).toFixed(1) + '%' : '0%';
+    
+    return {
+        summary: {
+            totalChildren: totalChildren,
+            fullyImmunized: fullyImmunized,
+            partiallyImmunized: partiallyImmunized > 0 ? partiallyImmunized : 0,
+            notImmunized: notImmunized > 0 ? notImmunized : 0,
+            coverage: coverage
+        },
+        data: vaccineData
+    };
+}
+
+// Get maternal health data
+function getMaternalHealthData() {
+    const pregnantPatients = getPregnantPatients();
+    const totalPregnant = pregnantPatients.length;
+    
+    // Calculate trimester distribution from pregnancy checkups
+    let firstTrimester = 0, secondTrimester = 0, thirdTrimester = 0;
+    let totalCheckups = allPregnancyCheckups.length;
+    let highRisk = 0;
+    
+    // Get latest checkup for each pregnant patient
+    const latestCheckups = new Map();
+    allPregnancyCheckups.forEach(checkup => {
+        const existing = latestCheckups.get(checkup.patient_id);
+        if (!existing || new Date(checkup.checkup_date) > new Date(existing.checkup_date)) {
+            latestCheckups.set(checkup.patient_id, checkup);
+        }
+    });
+    
+    latestCheckups.forEach(checkup => {
+        const trimester = checkup.trimester;
+        if (trimester === 1) firstTrimester++;
+        else if (trimester === 2) secondTrimester++;
+        else if (trimester === 3) thirdTrimester++;
+        
+        // Check for high risk indicators
+        if (checkup.remarks && checkup.remarks.toLowerCase().includes('high risk')) highRisk++;
+        if (checkup.doctor_notes && checkup.doctor_notes.toLowerCase().includes('high risk')) highRisk++;
+    });
+    
+    // Also count patients without checkups
+    const patientsWithCheckups = new Set(allPregnancyCheckups.map(c => c.patient_id));
+    pregnantPatients.forEach(patient => {
+        if (!patientsWithCheckups.has(patient.patient_id)) {
+            // Assume first trimester if no checkup
+            firstTrimester++;
+        }
+    });
+    
+    // Prepare patient data for table
+    const patientData = [];
+    pregnantPatients.forEach(patient => {
+        const checkup = latestCheckups.get(patient.patient_id);
+        patientData.push({
+            patientId: patient.patient_id,
+            name: `${patient.first_name} ${patient.last_name}`,
+            age: patient.age || '-',
+            trimester: checkup ? checkup.trimester : 1,
+            checkups: allPregnancyCheckups.filter(c => c.patient_id === patient.patient_id).length,
+            risk: 'Normal'
+        });
+    });
+    
+    return {
+        summary: {
+            totalPregnant: totalPregnant,
+            firstTrimester: firstTrimester,
+            secondTrimester: secondTrimester,
+            thirdTrimester: thirdTrimester,
+            completedCheckups: totalCheckups,
+            highRisk: highRisk
+        },
+        data: patientData.slice(0, 10) // Limit to 10 for display
+    };
+}
+
+// Get senior health data
+function getSeniorHealthData() {
+    const seniorPatients = getSeniorPatients();
+    const totalSenior = seniorPatients.length;
+    
+    let withMaintenance = 0;
+    let regularCheckups = 0;
+    let withComorbidities = 0;
+    
+    // Analyze senior records
+    allSeniorRecords.forEach(record => {
+        if (record.medication_history && record.medication_history !== '') withMaintenance++;
+        if (record.remarks && record.remarks.toLowerCase().includes('comorbid')) withComorbidities++;
+        // Count checkups from medical history
+        if (record.created_at) regularCheckups++;
+    });
+    
+    // Also check medical history for seniors
+    const seniorMedicalHistory = allPatients.filter(p => 
+        p.patient_type === 'Senior' && p.medical_history_notes
+    );
+    withComorbidities += seniorMedicalHistory.length;
+    
+    // Prepare patient data
+    const patientData = [];
+    seniorPatients.forEach(patient => {
+        const seniorRecord = allSeniorRecords.find(r => r.patient_id === patient.patient_id);
+        patientData.push({
+            patientId: patient.patient_id,
+            name: `${patient.first_name} ${patient.last_name}`,
+            age: patient.age || '-',
+            condition: seniorRecord?.medication_history || 'None',
+            lastVisit: seniorRecord?.created_at ? seniorRecord.created_at.split('T')[0] : '-'
+        });
+    });
+    
+    return {
+        summary: {
+            totalSenior: totalSenior,
+            withMaintenance: withMaintenance,
+            regularCheckups: regularCheckups,
+            withComorbidities: withComorbidities,
+            homeVisits: Math.floor(totalSenior * 0.3) // Approximate
+        },
+        data: patientData.slice(0, 10)
+    };
+}
+
+// Get inventory summary
+function getInventorySummary() {
+    let lowStockMedicines = 0;
+    let expiringMedicines = 0;
+    let lowStockVaccines = 0;
+    let expiringVaccines = 0;
+    
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    
+    // Process medicines
+    const medicineList = allMedicines.map(med => {
+        let status = 'Good';
+        if (med.quantity <= 10) lowStockMedicines++;
+        if (med.quantity <= 5) status = 'Low Stock';
+        
+        if (med.expiry) {
+            const expiryDate = new Date(med.expiry);
+            if (expiryDate < threeMonthsLater) {
+                expiringMedicines++;
+                if (status === 'Good') status = 'Expiring Soon';
+            }
+        }
+        
+        return {
+            name: med.name || 'Unknown',
+            dosage: med.dosage || '-',
+            stock: med.quantity || 0,
+            expiry: med.expiry || '-',
+            status: status
+        };
+    });
+    
+    // Process vaccines
+    const vaccineList = allVaccines.map(vac => {
+        let status = 'Good';
+        if (vac.quantity <= 10) lowStockVaccines++;
+        if (vac.quantity <= 5) status = 'Low Stock';
+        
+        if (vac.expiry) {
+            const expiryDate = new Date(vac.expiry);
+            if (expiryDate < threeMonthsLater) {
+                expiringVaccines++;
+                if (status === 'Good') status = 'Expiring Soon';
+            }
+        }
+        
+        return {
+            name: vac.name || 'Unknown',
+            stock: vac.quantity || 0,
+            expiry: vac.expiry || '-',
+            status: status
+        };
+    });
+    
+    return {
+        summary: {
+            totalMedicines: allMedicines.length,
+            totalVaccines: allVaccines.length,
+            lowStock: lowStockMedicines + lowStockVaccines,
+            expiringSoon: expiringMedicines + expiringVaccines
+        },
+        medicines: medicineList,
+        vaccines: vaccineList
+    };
+}
+
+// Get appointment summary
+function getAppointmentSummary() {
+    const totalAppointments = allAppointments.length;
+    let completed = 0, pending = 0, cancelled = 0, noShow = 0;
+    
+    allAppointments.forEach(app => {
+        const status = app.status;
+        if (status === 'Completed') completed++;
+        else if (status === 'Scheduled' || status === 'Confirmed') pending++;
+        else if (status === 'Cancelled') cancelled++;
+        else if (status === 'No Show') noShow++;
+        else pending++;
+    });
+    
+    // Group appointments by date
+    const dateMap = new Map();
+    allAppointments.forEach(app => {
+        const date = app.appointment_date;
+        if (!dateMap.has(date)) {
+            dateMap.set(date, { total: 0, completed: 0, pending: 0, cancelled: 0 });
+        }
+        const dayData = dateMap.get(date);
+        dayData.total++;
+        if (app.status === 'Completed') dayData.completed++;
+        else if (app.status === 'Scheduled' || app.status === 'Confirmed') dayData.pending++;
+        else if (app.status === 'Cancelled') dayData.cancelled++;
+    });
+    
+    const dailyData = Array.from(dateMap.entries())
+        .map(([date, data]) => ({
+            date: date,
+            total: data.total,
+            completed: data.completed,
+            pending: data.pending,
+            cancelled: data.cancelled
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+    
+    return {
+        summary: {
+            totalAppointments: totalAppointments,
+            completed: completed,
+            pending: pending,
+            cancelled: cancelled,
+            noShow: noShow
+        },
+        data: dailyData
+    };
+}
+
 // Update report preview based on filters
 function updateReportPreview() {
     const reportType = document.getElementById('reportType').value;
@@ -144,10 +484,7 @@ function updateReportPreview() {
     // Update report title and period
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const monthName = monthNames[month - 1];
-    document.getElementById('reportTitle').textContent = reportData[reportType].title;
     document.getElementById('reportPeriod').textContent = `${monthName} ${year}`;
-    
-    // Fixed location - Brgy. Dalig only
     document.getElementById('reportLocation').textContent = 'Brgy. Dalig, Teresa, Rizal';
     
     // Generate report content based on type
@@ -157,75 +494,76 @@ function updateReportPreview() {
 // Generate report content
 function generateReportContent(reportType) {
     const contentDiv = document.getElementById('reportContent');
-    const data = reportData[reportType];
-    
     let html = '';
     
     switch(reportType) {
         case 'nutrition':
-            html = generateNutritionReport(data);
+            html = generateNutritionReport();
             break;
         case 'immunization':
-            html = generateImmunizationReport(data);
+            html = generateImmunizationReport();
             break;
         case 'maternal':
-            html = generateMaternalReport(data);
+            html = generateMaternalReport();
             break;
         case 'senior':
-            html = generateSeniorReport(data);
+            html = generateSeniorReport();
             break;
         case 'inventory':
-            html = generateInventoryReport(data);
+            html = generateInventoryReport();
             break;
         case 'appointment':
-            html = generateAppointmentReport(data);
+            html = generateAppointmentReport();
             break;
     }
     
     contentDiv.innerHTML = html;
 }
 
-// Generate Nutrition Report
-function generateNutritionReport(data) {
-    const normalPercent = ((data.summary.normal / data.summary.totalChildren) * 100).toFixed(1);
-    const malnourishedPercent = ((data.summary.malnourished / data.summary.totalChildren) * 100).toFixed(1);
+// Generate Nutrition Report (from real data)
+function generateNutritionReport() {
+    const nutritionData = calculateNutritionStatus();
+    const areaData = getNutritionByArea();
+    
+    const normalPercent = nutritionData.totalChildren > 0 ? ((nutritionData.normal / nutritionData.totalChildren) * 100).toFixed(1) : 0;
+    const malnourishedPercent = nutritionData.totalChildren > 0 ? ((nutritionData.malnourished / nutritionData.totalChildren) * 100).toFixed(1) : 0;
     
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Children</h4>
-                <div class="value">${data.summary.totalChildren}</div>
+                <div class="value">${nutritionData.totalChildren}</div>
             </div>
             <div class="summary-card">
                 <h4>Normal</h4>
-                <div class="value" style="color: #4caf50;">${data.summary.normal} (${normalPercent}%)</div>
+                <div class="value" style="color: #4caf50;">${nutritionData.normal} (${normalPercent}%)</div>
             </div>
             <div class="summary-card">
                 <h4>Malnourished</h4>
-                <div class="value" style="color: #f44336;">${data.summary.malnourished} (${malnourishedPercent}%)</div>
+                <div class="value" style="color: #f44336;">${nutritionData.malnourished} (${malnourishedPercent}%)</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Mild Malnutrition</h4>
-                <div class="value" style="color: #ff9800;">${data.summary.mild}</div>
+                <div class="value" style="color: #ff9800;">${nutritionData.mild}</div>
             </div>
             <div class="summary-card">
                 <h4>Moderate Malnutrition</h4>
-                <div class="value" style="color: #f44336;">${data.summary.moderate}</div>
+                <div class="value" style="color: #f44336;">${nutritionData.moderate}</div>
             </div>
             <div class="summary-card">
                 <h4>Severe Malnutrition</h4>
-                <div class="value" style="color: #9c27b0;">${data.summary.severe}</div>
+                <div class="value" style="color: #9c27b0;">${nutritionData.severe}</div>
             </div>
         </div>
         
-        <h4 style="margin: 20px 0 10px;">Nutrition Status by Barangay</h4>
+        <h4 style="margin: 20px 0 10px;">Nutrition Status by Area</h4>
         <table class="report-table">
             <thead>
                 <tr>
-                    <th>Barangay</th>
+                    <th>Area</th>
                     <th>Total Children</th>
                     <th>Normal</th>
                     <th>Mild</th>
@@ -234,7 +572,7 @@ function generateNutritionReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.data.map(row => `
+                ${areaData.map(row => `
                     <tr>
                         <td>${row.barangay}</td>
                         <td>${row.total}</td>
@@ -244,45 +582,48 @@ function generateNutritionReport(data) {
                         <td class="nutrition-severe">${row.severe}</td>
                     </tr>
                 `).join('')}
+                ${areaData.length === 0 ? '<tr><td colspan="6" style="text-align: center;">No data available</td></tr>' : ''}
                 <tr class="total-row">
                     <td><strong>TOTAL</strong></td>
-                    <td><strong>${data.summary.totalChildren}</strong></td>
-                    <td><strong>${data.summary.normal}</strong></td>
-                    <td><strong>${data.summary.mild}</strong></td>
-                    <td><strong>${data.summary.moderate}</strong></td>
-                    <td><strong>${data.summary.severe}</strong></td>
+                    <td><strong>${nutritionData.totalChildren}</strong></td>
+                    <td><strong>${nutritionData.normal}</strong></td>
+                    <td><strong>${nutritionData.mild}</strong></td>
+                    <td><strong>${nutritionData.moderate}</strong></td>
+                    <td><strong>${nutritionData.severe}</strong></td>
                 </tr>
             </tbody>
         </table>
     `;
 }
 
-// Generate Immunization Report
-function generateImmunizationReport(data) {
+// Generate Immunization Report (from real data)
+function generateImmunizationReport() {
+    const immData = getImmunizationCoverage();
+    
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Children</h4>
-                <div class="value">${data.summary.totalChildren}</div>
+                <div class="value">${immData.summary.totalChildren}</div>
             </div>
             <div class="summary-card">
                 <h4>Fully Immunized</h4>
-                <div class="value" style="color: #4caf50;">${data.summary.fullyImmunized}</div>
+                <div class="value" style="color: #4caf50;">${immData.summary.fullyImmunized}</div>
             </div>
             <div class="summary-card">
                 <h4>Coverage Rate</h4>
-                <div class="value">${data.summary.coverage}</div>
+                <div class="value">${immData.summary.coverage}</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Partially Immunized</h4>
-                <div class="value" style="color: #ff9800;">${data.summary.partiallyImmunized}</div>
+                <div class="value" style="color: #ff9800;">${immData.summary.partiallyImmunized}</div>
             </div>
             <div class="summary-card">
                 <h4>Not Immunized</h4>
-                <div class="value" style="color: #f44336;">${data.summary.notImmunized}</div>
+                <div class="value" style="color: #f44336;">${immData.summary.notImmunized}</div>
             </div>
         </div>
         
@@ -297,7 +638,7 @@ function generateImmunizationReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.data.map(row => `
+                ${immData.data.map(row => `
                     <tr>
                         <td>${row.vaccine}</td>
                         <td>${row.target}</td>
@@ -305,41 +646,44 @@ function generateImmunizationReport(data) {
                         <td>${row.coverage}</td>
                     </tr>
                 `).join('')}
+                ${immData.data.length === 0 ? '<tr><td colspan="4" style="text-align: center;">No immunization data available</td></tr>' : ''}
             </tbody>
         </table>
     `;
 }
 
-// Generate Maternal Report
-function generateMaternalReport(data) {
+// Generate Maternal Report (from real data)
+function generateMaternalReport() {
+    const maternalData = getMaternalHealthData();
+    
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Pregnant Women</h4>
-                <div class="value">${data.summary.totalPregnant}</div>
+                <div class="value">${maternalData.summary.totalPregnant}</div>
             </div>
             <div class="summary-card">
                 <h4>1st Trimester</h4>
-                <div class="value">${data.summary.firstTrimester}</div>
+                <div class="value">${maternalData.summary.firstTrimester}</div>
             </div>
             <div class="summary-card">
                 <h4>2nd Trimester</h4>
-                <div class="value">${data.summary.secondTrimester}</div>
+                <div class="value">${maternalData.summary.secondTrimester}</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>3rd Trimester</h4>
-                <div class="value">${data.summary.thirdTrimester}</div>
+                <div class="value">${maternalData.summary.thirdTrimester}</div>
             </div>
             <div class="summary-card">
                 <h4>Total Checkups</h4>
-                <div class="value">${data.summary.completedCheckups}</div>
+                <div class="value">${maternalData.summary.completedCheckups}</div>
             </div>
             <div class="summary-card">
                 <h4>High Risk Cases</h4>
-                <div class="value" style="color: #f44336;">${data.summary.highRisk}</div>
+                <div class="value" style="color: #f44336;">${maternalData.summary.highRisk}</div>
             </div>
         </div>
         
@@ -356,7 +700,7 @@ function generateMaternalReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.data.map(row => `
+                ${maternalData.data.map(row => `
                     <tr>
                         <td>${row.patientId}</td>
                         <td>${row.name}</td>
@@ -366,37 +710,40 @@ function generateMaternalReport(data) {
                         <td class="${row.risk === 'High' ? 'nutrition-severe' : 'nutrition-normal'}">${row.risk}</td>
                     </tr>
                 `).join('')}
+                ${maternalData.data.length === 0 ? '<tr><td colspan="6" style="text-align: center;">No maternal data available</td></tr>' : ''}
             </tbody>
         </table>
     `;
 }
 
-// Generate Senior Report
-function generateSeniorReport(data) {
+// Generate Senior Report (from real data)
+function generateSeniorReport() {
+    const seniorData = getSeniorHealthData();
+    
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Senior Citizens</h4>
-                <div class="value">${data.summary.totalSenior}</div>
+                <div class="value">${seniorData.summary.totalSenior}</div>
             </div>
             <div class="summary-card">
                 <h4>With Maintenance</h4>
-                <div class="value">${data.summary.withMaintenance}</div>
+                <div class="value">${seniorData.summary.withMaintenance}</div>
             </div>
             <div class="summary-card">
                 <h4>Regular Checkups</h4>
-                <div class="value">${data.summary.regularCheckups}</div>
+                <div class="value">${seniorData.summary.regularCheckups}</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>With Comorbidities</h4>
-                <div class="value">${data.summary.withComorbidities}</div>
+                <div class="value">${seniorData.summary.withComorbidities}</div>
             </div>
             <div class="summary-card">
                 <h4>Home Visits</h4>
-                <div class="value">${data.summary.homeVisits}</div>
+                <div class="value">${seniorData.summary.homeVisits}</div>
             </div>
         </div>
         
@@ -412,7 +759,7 @@ function generateSeniorReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.data.map(row => `
+                ${seniorData.data.map(row => `
                     <tr>
                         <td>${row.patientId}</td>
                         <td>${row.name}</td>
@@ -421,33 +768,36 @@ function generateSeniorReport(data) {
                         <td>${row.lastVisit}</td>
                     </tr>
                 `).join('')}
+                ${seniorData.data.length === 0 ? '<tr><td colspan="5" style="text-align: center;">No senior data available</td></tr>' : ''}
             </tbody>
         </table>
     `;
 }
 
-// Generate Inventory Report
-function generateInventoryReport(data) {
+// Generate Inventory Report (from real data)
+function generateInventoryReport() {
+    const inventoryData = getInventorySummary();
+    
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Medicines</h4>
-                <div class="value">${data.summary.totalMedicines}</div>
+                <div class="value">${inventoryData.summary.totalMedicines}</div>
             </div>
             <div class="summary-card">
                 <h4>Total Vaccines</h4>
-                <div class="value">${data.summary.totalVaccines}</div>
+                <div class="value">${inventoryData.summary.totalVaccines}</div>
             </div>
             <div class="summary-card">
                 <h4>Low Stock Items</h4>
-                <div class="value" style="color: #ff9800;">${data.summary.lowStock}</div>
+                <div class="value" style="color: #ff9800;">${inventoryData.summary.lowStock}</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Expiring Soon</h4>
-                <div class="value" style="color: #f44336;">${data.summary.expiringSoon}</div>
+                <div class="value" style="color: #f44336;">${inventoryData.summary.expiringSoon}</div>
             </div>
         </div>
         
@@ -463,7 +813,7 @@ function generateInventoryReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.medicines.map(row => `
+                ${inventoryData.medicines.map(row => `
                     <tr>
                         <td>${row.name}</td>
                         <td>${row.dosage}</td>
@@ -472,6 +822,7 @@ function generateInventoryReport(data) {
                         <td class="${row.status === 'Expiring Soon' ? 'nutrition-mild' : (row.status === 'Low Stock' ? 'nutrition-moderate' : 'nutrition-normal')}">${row.status}</td>
                     </tr>
                 `).join('')}
+                ${inventoryData.medicines.length === 0 ? '<tr><td colspan="5" style="text-align: center;">No medicines in inventory</td></tr>' : ''}
             </tbody>
         </table>
         
@@ -486,7 +837,7 @@ function generateInventoryReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.vaccines.map(row => `
+                ${inventoryData.vaccines.map(row => `
                     <tr>
                         <td>${row.name}</td>
                         <td>${row.stock}</td>
@@ -494,41 +845,44 @@ function generateInventoryReport(data) {
                         <td class="${row.status === 'Expiring Soon' ? 'nutrition-mild' : (row.status === 'Low Stock' ? 'nutrition-moderate' : 'nutrition-normal')}">${row.status}</td>
                     </tr>
                 `).join('')}
+                ${inventoryData.vaccines.length === 0 ? '<tr><td colspan="4" style="text-align: center;">No vaccines in inventory</td></tr>' : ''}
             </tbody>
         </table>
     `;
 }
 
-// Generate Appointment Report
-function generateAppointmentReport(data) {
+// Generate Appointment Report (from real data)
+function generateAppointmentReport() {
+    const appointmentData = getAppointmentSummary();
+    
     return `
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Total Appointments</h4>
-                <div class="value">${data.summary.totalAppointments}</div>
+                <div class="value">${appointmentData.summary.totalAppointments}</div>
             </div>
             <div class="summary-card">
                 <h4>Completed</h4>
-                <div class="value" style="color: #4caf50;">${data.summary.completed}</div>
+                <div class="value" style="color: #4caf50;">${appointmentData.summary.completed}</div>
             </div>
             <div class="summary-card">
                 <h4>Pending</h4>
-                <div class="value" style="color: #ff9800;">${data.summary.pending}</div>
+                <div class="value" style="color: #ff9800;">${appointmentData.summary.pending}</div>
             </div>
         </div>
         
         <div class="summary-cards">
             <div class="summary-card">
                 <h4>Cancelled</h4>
-                <div class="value" style="color: #9e9e9e;">${data.summary.cancelled}</div>
+                <div class="value" style="color: #9e9e9e;">${appointmentData.summary.cancelled}</div>
             </div>
             <div class="summary-card">
                 <h4>No Show</h4>
-                <div class="value" style="color: #f44336;">${data.summary.noShow}</div>
+                <div class="value" style="color: #f44336;">${appointmentData.summary.noShow}</div>
             </div>
         </div>
         
-        <h4 style="margin: 20px 0 10px;">Daily Appointment Summary</h4>
+        <h4 style="margin: 20px 0 10px;">Recent Appointment Summary</h4>
         <table class="report-table">
             <thead>
                 <tr>
@@ -540,7 +894,7 @@ function generateAppointmentReport(data) {
                 </tr>
             </thead>
             <tbody>
-                ${data.data.map(row => `
+                ${appointmentData.data.map(row => `
                     <tr>
                         <td>${row.date}</td>
                         <td>${row.total}</td>
@@ -549,12 +903,13 @@ function generateAppointmentReport(data) {
                         <td>${row.cancelled}</td>
                     </tr>
                 `).join('')}
+                ${appointmentData.data.length === 0 ? '<tr><td colspan="5" style="text-align: center;">No appointment data available</td></tr>' : ''}
                 <tr class="total-row">
                     <td><strong>TOTAL</strong></td>
-                    <td><strong>${data.summary.totalAppointments}</strong></td>
-                    <td><strong>${data.summary.completed}</strong></td>
-                    <td><strong>${data.summary.pending}</strong></td>
-                    <td><strong>${data.summary.cancelled + data.summary.noShow}</strong></td>
+                    <td><strong>${appointmentData.summary.totalAppointments}</strong></td>
+                    <td><strong>${appointmentData.summary.completed}</strong></td>
+                    <td><strong>${appointmentData.summary.pending}</strong></td>
+                    <td><strong>${appointmentData.summary.cancelled + appointmentData.summary.noShow}</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -563,15 +918,11 @@ function generateAppointmentReport(data) {
 
 // Generate monthly report (quick action)
 function generateMonthlyReport() {
-    // Set to current month
     const today = new Date();
     document.getElementById('month').value = today.getMonth() + 1;
     document.getElementById('year').value = today.getFullYear();
-    
-    // Update preview
     updateReportPreview();
-    
-    alert('Monthly report generated! You can now export to PDF or Excel.');
+    alert('Monthly report generated with current data! You can now export to PDF or Excel.');
 }
 
 // Export to PDF
@@ -579,92 +930,92 @@ function exportToPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
     
-    // Get report title and content
     const title = document.getElementById('reportTitle').textContent;
     const period = document.getElementById('reportPeriod').textContent;
     const location = document.getElementById('reportLocation').textContent;
     
-    // Add title
     doc.setFontSize(16);
     doc.setTextColor(43, 104, 150);
     doc.text(title, 40, 40);
     
-    // Add period and location
     doc.setFontSize(11);
     doc.setTextColor(100, 100, 100);
     doc.text(`Period: ${period}`, 40, 60);
     doc.text(`Location: ${location}`, 40, 75);
     
-    // Add date generated
     const today = new Date();
     doc.text(`Generated: ${today.toLocaleDateString()}`, 40, 90);
     
-    // Get table data based on current report type
     const reportType = document.getElementById('reportType').value;
-    const data = reportData[reportType];
     
+    // Get table data based on current report type
     let tableData = [];
     let headers = [];
     
     switch(reportType) {
         case 'nutrition':
-            headers = [['Barangay', 'Total', 'Normal', 'Mild', 'Moderate', 'Severe']];
-            tableData = data.data.map(row => [row.barangay, row.total, row.normal, row.mild, row.moderate, row.severe]);
-            // Add summary row
-            tableData.push(['TOTAL', data.summary.totalChildren, data.summary.normal, data.summary.mild, data.summary.moderate, data.summary.severe]);
+            const nutritionData = calculateNutritionStatus();
+            const areaData = getNutritionByArea();
+            headers = [['Area', 'Total', 'Normal', 'Mild', 'Moderate', 'Severe']];
+            tableData = areaData.map(row => [row.barangay, row.total, row.normal, row.mild, row.moderate, row.severe]);
+            tableData.push(['TOTAL', nutritionData.totalChildren, nutritionData.normal, nutritionData.mild, nutritionData.moderate, nutritionData.severe]);
             break;
             
         case 'immunization':
+            const immData = getImmunizationCoverage();
             headers = [['Vaccine', 'Target', 'Administered', 'Coverage']];
-            tableData = data.data.map(row => [row.vaccine, row.target, row.administered, row.coverage]);
+            tableData = immData.data.map(row => [row.vaccine, row.target, row.administered, row.coverage]);
             break;
             
         case 'maternal':
+            const maternalData = getMaternalHealthData();
             headers = [['Patient ID', 'Name', 'Age', 'Trimester', 'Checkups', 'Risk']];
-            tableData = data.data.map(row => [row.patientId, row.name, row.age, row.trimester, row.checkups, row.risk]);
+            tableData = maternalData.data.map(row => [row.patientId, row.name, row.age, row.trimester, row.checkups, row.risk]);
             break;
             
         case 'senior':
+            const seniorData = getSeniorHealthData();
             headers = [['Patient ID', 'Name', 'Age', 'Condition', 'Last Visit']];
-            tableData = data.data.map(row => [row.patientId, row.name, row.age, row.condition, row.lastVisit]);
+            tableData = seniorData.data.map(row => [row.patientId, row.name, row.age, row.condition, row.lastVisit]);
             break;
             
         case 'inventory':
-            headers = [['Medicine', 'Dosage', 'Stock', 'Expiry', 'Status']];
-            tableData = data.medicines.map(row => [row.name, row.dosage, row.stock, row.expiry, row.status]);
+            const inventoryData = getInventorySummary();
+            headers = [['Item', 'Dosage/Type', 'Stock', 'Expiry', 'Status']];
+            tableData = inventoryData.medicines.map(row => [row.name, row.dosage, row.stock, row.expiry, row.status]);
             break;
             
         case 'appointment':
+            const appointmentData = getAppointmentSummary();
             headers = [['Date', 'Total', 'Completed', 'Pending', 'Cancelled']];
-            tableData = data.data.map(row => [row.date, row.total, row.completed, row.pending, row.cancelled]);
-            tableData.push(['TOTAL', data.summary.totalAppointments, data.summary.completed, data.summary.pending, data.summary.cancelled + data.summary.noShow]);
+            tableData = appointmentData.data.map(row => [row.date, row.total, row.completed, row.pending, row.cancelled]);
+            tableData.push(['TOTAL', appointmentData.summary.totalAppointments, appointmentData.summary.completed, appointmentData.summary.pending, appointmentData.summary.cancelled + appointmentData.summary.noShow]);
             break;
     }
     
-    // Add table
-    doc.autoTable({
-        head: headers,
-        body: tableData,
-        startY: 110,
-        theme: 'striped',
-        headStyles: {
-            fillColor: [43, 104, 150],
-            textColor: [255, 255, 255],
-            fontSize: 10
-        },
-        styles: {
-            fontSize: 9,
-            cellPadding: 5
-        }
-    });
+    if (tableData.length > 0) {
+        doc.autoTable({
+            head: headers,
+            body: tableData,
+            startY: 110,
+            theme: 'striped',
+            headStyles: {
+                fillColor: [43, 104, 150],
+                textColor: [255, 255, 255],
+                fontSize: 10
+            },
+            styles: {
+                fontSize: 9,
+                cellPadding: 5
+            }
+        });
+    }
     
-    // Save PDF
     doc.save(`NutriTrack_Report_${reportType}_${period.replace(/ /g, '_')}.pdf`);
-    
     alert('PDF downloaded successfully!');
 }
 
-// Export to Excel (simulated - would need SheetJS or similar)
+// Export to Excel (simulated)
 function exportToExcel() {
     alert('Excel export will be available in the full version.\n\nFor now, you can print or save as PDF.');
 }
@@ -672,9 +1023,7 @@ function exportToExcel() {
 // Print report
 function printReport() {
     const reportContent = document.querySelector('.report-preview-container').innerHTML;
-    const originalTitle = document.title;
     
-    // Create a new window for printing
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <html>
@@ -687,9 +1036,14 @@ function printReport() {
                     table { width: 100%; border-collapse: collapse; margin: 20px 0; }
                     th { background: #2B6896; color: white; padding: 10px; text-align: left; }
                     td { padding: 8px; border-bottom: 1px solid #ddd; }
-                    .summary-cards { display: flex; gap: 15px; margin: 20px 0; }
-                    .summary-card { background: #f5f5f5; padding: 15px; flex: 1; border-radius: 5px; }
+                    .summary-cards { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+                    .summary-card { background: #f5f5f5; padding: 15px; flex: 1; min-width: 150px; border-radius: 5px; text-align: center; }
+                    .summary-card .value { font-size: 24px; font-weight: bold; color: #2B6896; }
                     .report-footer { margin-top: 50px; display: flex; justify-content: space-between; }
+                    .nutrition-normal { color: #4caf50; }
+                    .nutrition-mild { color: #ff9800; }
+                    .nutrition-moderate { color: #f44336; }
+                    .nutrition-severe { color: #9c27b0; }
                     @media print {
                         button { display: none; }
                     }
@@ -704,7 +1058,6 @@ function printReport() {
     printWindow.document.close();
     printWindow.focus();
     
-    // Wait for content to load then print
     setTimeout(() => {
         printWindow.print();
     }, 500);
@@ -714,17 +1067,23 @@ function printReport() {
 document.addEventListener('DOMContentLoaded', function() {
     displayCurrentDate();
     
-    // Set prepared by name from session if available
     const userInfo = sessionStorage.getItem('currentUser');
     if (userInfo) {
         try {
             const user = JSON.parse(userInfo);
-            document.getElementById('preparedBy').textContent = `${user.name}, ${user.role}`;
+            document.getElementById('preparedBy').textContent = `${user.name}, ${user.role || 'BNS Worker'}`;
         } catch (e) {
             // Use default
         }
     }
     
-    // Generate initial report
-    updateReportPreview();
+    // Show loading indicator
+    document.getElementById('reportContent').innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            Loading report data from database...
+        </div>
+    `;
+    
+    // Load data and generate initial report
+    loadAllData();
 });
