@@ -77,7 +77,7 @@
                     
                     <li><a href="immunizations.html">Child Immunizations</a></li>
                     <li><a href="staff.html">Staff</a></li>
-                    <li class="active"><a href="users.html">Users</a></li>
+                    <li id="usersMenuItem" class="active"><a href="users.html">Users</a></li>
                     <li><a href="reports.html">Reports</a></li>
                     <li><a href="payroll.html">Payroll</a></li>
                 </ul>
@@ -87,21 +87,18 @@
                 </div>
             </div>
             
-            <!-- Content Area - Only Table Scrolls (Same as Patients) -->
+            <!-- Content Area -->
             <div class="content-area">
-                <!-- Fixed Header Section -->
                 <div class="users-header">
                     <h2 class="page-title">USER MAINTENANCE</h2>
                     <button class="add-user-btn" onclick="showAddUserModal()">+ Add User</button>
                 </div>
                 
-                <!-- Fixed Search/Sort Section (Identical to Patients) -->
                 <div class="search-sort-container">
                     <div class="search-box">
-                        <input type="text" id="userSearch" placeholder="Find by Username, Name, Position, or Department...">
+                        <input type="text" id="userSearch" placeholder="Find by Username, Name, Position, Email, or Department...">
                         <button onclick="searchUsers()">🔍</button>
                     </div>
-                    
                     <div class="sort-box">
                         <label for="sortBy">Sort by:</label>
                         <select id="sortBy" onchange="sortUsers()">
@@ -116,7 +113,6 @@
                     </div>
                 </div>
                 
-                <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
                 <div class="table-container">
                     <div class="table-wrapper">
                         <table class="users-table">
@@ -126,6 +122,7 @@
                                     <th>Username</th>
                                     <th>Password</th>
                                     <th>Name</th>
+                                    <th>Email</th>
                                     <th>Position</th>
                                     <th>Department</th>
                                     <th>Date Created</th>
@@ -134,13 +131,12 @@
                                 </tr>
                             </thead>
                             <tbody id="usersTableBody">
-                                <!-- Data will be loaded here via JavaScript -->
+                                <tr><td colspan="10" style="text-align: center;">Loading users...<\/td><\/tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 
-                <!-- Fixed Footer -->
                 <div class="date-footer">
                     Date today: <span id="currentDate"></span>
                 </div>
@@ -159,25 +155,52 @@
                 <form id="userForm">
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Staff Type *</label>
+                            <select id="staffType" required onchange="loadStaffByType()">
+                                <option value="">Select Staff Type</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="bns">BNS Worker</option>
+                                <option value="nurse">Nurse</option>
+                                <option value="it">IT Staff</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Select Staff Member *</label>
                             <select id="staffId" required onchange="updateStaffInfo()">
                                 <option value="">Select Staff</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Username *</label>
-                            <input type="text" id="username" required placeholder="e.g., jdelacruz">
+                            <input type="text" id="username" required placeholder="Auto-generated or manual">
+                        </div>
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="password" required placeholder="Enter password">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Password *</label>
-                            <input type="password" id="password" required placeholder="Enter password">
-                        </div>
-                        <div class="form-group">
                             <label>Confirm Password *</label>
                             <input type="password" id="confirmPassword" required placeholder="Confirm password">
+                        </div>
+                        <div class="form-group">
+                            <label>Access Level *</label>
+                            <select id="accessLevel" required>
+                                <option value="">Select Access Level</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="BNS Worker">BNS Worker</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="IT">IT</option>
+                                <option value="Nutritionist">Nutritionist</option>
+                                <option value="Staff">Staff</option>
+                                <option value="View Only">View Only</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -187,28 +210,19 @@
                             <input type="text" id="name" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
                         </div>
                         <div class="form-group">
-                            <label>Position</label>
-                            <input type="text" id="position" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
+                            <label>Email</label>
+                            <input type="email" id="email" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Department</label>
-                            <input type="text" id="department" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
+                            <label>Position</label>
+                            <input type="text" id="position" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
                         </div>
                         <div class="form-group">
-                            <label>Access Level *</label>
-                            <select id="accessLevel" required>
-                                <option value="">Select Access Level</option>
-                                <option value="Admin">Admin</option>
-                                <option value="BNS Worker">BNS Worker</option>
-                                <option value="Nurse">Nurse</option>
-                                <option value="Nutritionist">Nutritionist</option>
-                                <option value="Doctor">Doctor</option>
-                                <option value="Staff">Staff</option>
-                                <option value="View Only">View Only</option>
-                            </select>
+                            <label>Department</label>
+                            <input type="text" id="department" readonly style="background-color: #f0f0f0;" placeholder="Auto-fills from staff">
                         </div>
                     </div>
                 </form>
@@ -220,7 +234,43 @@
         </div>
     </div>
 
+    <!-- View User Modal -->
+    <div class="modal" id="viewUserModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h2>User Details</h2>
+                <button class="close-modal" onclick="closeViewUserModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewUserModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewUserModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/users.js"></script>
+    
+    <script>
+    // Hide Users menu for non-Admin/non-IT users
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInfo = sessionStorage.getItem('currentUser');
+        if (userInfo) {
+            try {
+                const user = JSON.parse(userInfo);
+                const userRole = user.access_level || user.role;
+                const usersMenuItem = document.querySelector('.sidebar-menu li a[href="users.html"]');
+                if (usersMenuItem) {
+                    const parentLi = usersMenuItem.closest('li');
+                    if (userRole !== 'Admin' && userRole !== 'IT') {
+                        if (parentLi) parentLi.style.display = 'none';
+                    }
+                }
+            } catch(e) {
+                console.error("Error:", e);
+            }
+        }
+    });
+</script>
 </body>
 </html>

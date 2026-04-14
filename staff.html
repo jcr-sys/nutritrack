@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriTrack PH - Staff</title>
+    <title>NutriTrack PH - Staff Management</title>
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/staff.css">
 
@@ -85,61 +85,202 @@
                 </div>
             </div>
             
-            <!-- Content Area - Only Table Scrolls (Same as Patients) -->
+            <!-- Content Area -->
             <div class="content-area">
-                <!-- Fixed Header Section -->
                 <div class="staff-header">
-                    <h2 class="page-title">STAFF</h2>
-                    <button class="add-staff-btn" onclick="showAddStaffModal()">+ Add Staff</button>
+                    <h2 class="page-title">STAFF MANAGEMENT</h2>
+                    <div class="header-buttons">
+                        <button class="add-staff-btn" onclick="showAddDoctorModal()">+ Add Doctor</button>
+                        <button class="add-staff-btn bns-btn" onclick="showAddBNSModal()">+ Add BNS Worker</button>
+                        <button class="add-staff-btn nurse-btn" onclick="showAddNurseModal()">+ Add Nurse</button>
+                        <button class="add-staff-btn it-btn" onclick="showAddITModal()">+ Add IT Staff</button>
+                    </div>
                 </div>
-                
-                <!-- Fixed Search/Sort Section -->
-                <div class="search-sort-container">
-                    <div class="search-box">
-                        <input type="text" id="staffSearch" placeholder="Find by Name, Specialty, or License...">
-                        <button onclick="searchStaff()">🔍</button>
+
+                <!-- ========== DOCTORS SECTION ========== -->
+                <div class="staff-section">
+                    <div class="section-title">
+                        <h3>DOCTORS</h3>
                     </div>
                     
-                    <div class="sort-box">
-                        <label for="sortBy">Sort by:</label>
-                        <select id="sortBy" onchange="sortStaff()">
-                            <option value="doctor_id">Doctor ID</option>
-                            <option value="last_name">Last Name</option>
-                            <option value="first_name">First Name</option>
-                            <option value="specialty">Specialty</option>
-                            <option value="date_joined">Date Joined</option>
-                        </select>
+                    <div class="search-sort-container">
+                        <div class="search-box">
+                            <input type="text" id="doctorSearch" placeholder="Find doctor by name, specialty, or license...">
+                            <button onclick="searchDoctors()">🔍</button>
+                        </div>
+                        <div class="sort-box">
+                            <label>Sort by:</label>
+                            <select id="doctorSortBy" onchange="sortDoctors()">
+                                <option value="doctor_id">ID</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="first_name">First Name</option>
+                                <option value="specialty">Specialty</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Last Name</th>
+                                        <th>First Name</th>
+                                        <th>Specialty</th>
+                                        <th>Email</th>
+                                        <th>License</th>
+                                        <th>Phone</th>
+                                        <th>Salary</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doctorsTableBody">
+                                    <tr><td colspan="9" style="text-align: center;">Loading doctors...<\/div><\/div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== BNS WORKERS SECTION ========== -->
+                <div class="staff-section">
+                    <div class="section-title">
+                        <h3>BARANGAY NUTRITION SCHOLARS (BNS)</h3>
+                    </div>
+                    
+                    <div class="search-sort-container">
+                        <div class="search-box">
+                            <input type="text" id="bnsSearch" placeholder="Find BNS by name, barangay, or contact...">
+                            <button onclick="searchBNS()">🔍</button>
+                        </div>
+                        <div class="sort-box">
+                            <label>Sort by:</label>
+                            <select id="bnsSortBy" onchange="sortBNS()">
+                                <option value="bns_id">ID</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="first_name">First Name</option>
+                                <option value="barangay_assigned">Barangay</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Last Name</th>
+                                        <th>First Name</th>
+                                        <th>Email</th>
+                                        <th>Barangay Assigned</th>
+                                        <th>Contact</th>
+                                        <th>Date Joined</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bnsTableBody">
+                                    <tr><td colspan="9" style="text-align: center;">Loading BNS workers...<\/div><\/div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== NURSES SECTION ========== -->
+                <div class="staff-section">
+                    <div class="section-title">
+                        <h3>NURSES</h3>
+                    </div>
+                    
+                    <div class="search-sort-container">
+                        <div class="search-box">
+                            <input type="text" id="nurseSearch" placeholder="Find nurse by name, license, or specialty...">
+                            <button onclick="searchNurses()">🔍</button>
+                        </div>
+                        <div class="sort-box">
+                            <label>Sort by:</label>
+                            <select id="nurseSortBy" onchange="sortNurses()">
+                                <option value="nurse_id">ID</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="first_name">First Name</option>
+                                <option value="specialty">Specialty</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Last Name</th>
+                                        <th>First Name</th>
+                                        <th>Email</th>
+                                        <th>License</th>
+                                        <th>Specialty</th>
+                                        <th>Phone</th>
+                                        <th>Date Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nursesTableBody">
+                                    <tr><td colspan="9" style="text-align: center;">Loading nurses...<\/div><\/div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== IT STAFF SECTION ========== -->
+                <div class="staff-section">
+                    <div class="section-title">
+                        <h3>IT STAFF</h3>
+                    </div>
+                    
+                    <div class="search-sort-container">
+                        <div class="search-box">
+                            <input type="text" id="itSearch" placeholder="Find IT staff by name, position, or contact...">
+                            <button onclick="searchITStaff()">🔍</button>
+                        </div>
+                        <div class="sort-box">
+                            <label>Sort by:</label>
+                            <select id="itSortBy" onchange="sortITStaff()">
+                                <option value="it_id">ID</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="first_name">First Name</option>
+                                <option value="position">Position</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Last Name</th>
+                                        <th>First Name</th>
+                                        <th>Email</th>
+                                        <th>Position</th>
+                                        <th>Phone</th>
+                                        <th>Date Joined</th>
+                                        <th>Salary</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itTableBody">
+                                    <tr><td colspan="9" style="text-align: center;">Loading IT staff...<\/div><\/div>
+                                </tbody>
+                            <tr>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Table Container - ONLY THIS SCROLLS -->
-                <div class="table-container">
-                    <div class="table-wrapper">
-                        <table class="staff-table">
-                            <thead>
-                                <tr>
-                                    <th>Doctor ID</th>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Specialty</th>
-                                    <th>Department</th>
-                                    <th>License Number</th>
-                                    <th>Phone Number</th>
-                                    <th>Address</th>
-                                    <th>Date Joined</th>
-                                    <th>Salary</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staffTableBody">
-                                <!-- Data will be loaded here via JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Fixed Footer -->
                 <div class="date-footer">
                     Date today: <span id="currentDate"></span>
                 </div>
@@ -147,95 +288,202 @@
         </div>
     </div>
 
-    <!-- Add Staff Modal -->
-    <div class="modal" id="addStaffModal">
+    <!-- ========== MODALS ========== -->
+
+    <!-- Add/Edit Doctor Modal -->
+    <div class="modal" id="doctorModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add New Staff Member</h2>
-                <button class="close-modal" onclick="hideAddStaffModal()">&times;</button>
+                <h2 id="doctorModalTitle">Add New Doctor</h2>
+                <button class="close-modal" onclick="hideDoctorModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="staffForm">
+                <form id="doctorForm">
+                    <input type="hidden" id="doctorDocId">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Last Name *</label>
-                            <input type="text" id="lastName" required placeholder="e.g., Filio">
-                        </div>
-                        <div class="form-group">
-                            <label>First Name *</label>
-                            <input type="text" id="firstName" required placeholder="e.g., Mary">
-                        </div>
-                        <div class="form-group">
-                            <label>Middle Name</label>
-                            <input type="text" id="middleName" placeholder="e.g., Lauriano">
-                        </div>
+                        <div class="form-group"><label>Last Name *</label><input type="text" id="docLastName" required></div>
+                        <div class="form-group"><label>First Name *</label><input type="text" id="docFirstName" required></div>
+                        <div class="form-group"><label>Middle Name</label><input type="text" id="docMiddleName"></div>
                     </div>
-                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Specialty *</label>
-                            <select id="specialty" required>
+                        <div class="form-group"><label>Specialty *</label>
+                            <select id="docSpecialty" required>
                                 <option value="">Select Specialty</option>
                                 <option value="Pediatrics">Pediatrics</option>
                                 <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
                                 <option value="Geriatrics">Geriatrics</option>
-                                <option value="BNS Worker">BNS Worker</option>
-                                <option value="Nurse">Nurse</option>
-                                <option value="IT">IT</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>License Number *</label>
-                            <input type="text" id="licenseNumber" required placeholder="e.g., LICENSE123">
-                        </div>
+                        <div class="form-group"><label>License Number *</label><input type="text" id="docLicense" required></div>
                     </div>
-                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="text" id="phoneNumber" placeholder="e.g., 09123456789">
-                        </div>
-                        <div class="form-group">
-                            <label>Address *</label>
-                            <input type="text" id="address" required placeholder="e.g., Teresa, Rizal">
-                        </div>
+                        <div class="form-group"><label>Email Address *</label><input type="email" id="docEmail" required placeholder="doctor@example.com"></div>
+                        <div class="form-group"><label>Phone Number</label><input type="text" id="docPhone"></div>
                     </div>
-                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Department *</label>
-                            <select id="department" required>
-                                <option value="">Select Department</option>
-                                <option value="Nursing">Nursing</option>
-                                <option value="BNS">BNS</option>
-                                <option value="Pediatrics Department">Pediatrics Department</option>
-                                <option value="Obstetrics Department">Obstetrics Department</option>
-                                <option value="Geriatrics Department">Geriatrics Department</option>
-                                <option value="IT Department">IT Department</option>
+                        <div class="form-group"><label>Address</label><input type="text" id="docAddress"></div>
+                        <div class="form-group"><label>Date Joined</label><input type="date" id="docDateJoined"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Salary</label><input type="number" id="docSalary" step="1000"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideDoctorModal()">Cancel</button>
+                <button class="save-btn" onclick="saveDoctor()">Save Doctor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit BNS Modal -->
+    <div class="modal" id="bnsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bnsModalTitle">Add New BNS Worker</h2>
+                <button class="close-modal" onclick="hideBNSModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bnsForm">
+                    <input type="hidden" id="bnsDocId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Last Name *</label><input type="text" id="bnsLastName" required></div>
+                        <div class="form-group"><label>First Name *</label><input type="text" id="bnsFirstName" required></div>
+                        <div class="form-group"><label>Middle Name</label><input type="text" id="bnsMiddleName"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email Address *</label><input type="email" id="bnsEmail" required placeholder="bns@example.com"></div>
+                        <div class="form-group"><label>Barangay Assigned *</label><input type="text" id="bnsBarangay" required placeholder="e.g., Brgy. Dalig"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Contact Number</label><input type="text" id="bnsContact"></div>
+                        <div class="form-group"><label>Date Joined</label><input type="date" id="bnsDateJoined"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Status</label>
+                            <select id="bnsStatus">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Date Joined</label>
-                            <input type="date" id="dateJoined">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Salary</label>
-                            <input type="number" id="salary" step="1000" placeholder="e.g., 70000">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="cancel-btn" onclick="hideAddStaffModal()">Cancel</button>
-                <button class="save-btn" onclick="saveStaff()">Save Staff</button>
+                <button class="cancel-btn" onclick="hideBNSModal()">Cancel</button>
+                <button class="save-btn" onclick="saveBNS()">Save BNS Worker</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Nurse Modal -->
+    <div class="modal" id="nurseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="nurseModalTitle">Add New Nurse</h2>
+                <button class="close-modal" onclick="hideNurseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="nurseForm">
+                    <input type="hidden" id="nurseDocId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Last Name *</label><input type="text" id="nurseLastName" required></div>
+                        <div class="form-group"><label>First Name *</label><input type="text" id="nurseFirstName" required></div>
+                        <div class="form-group"><label>Middle Name</label><input type="text" id="nurseMiddleName"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email Address *</label><input type="email" id="nurseEmail" required placeholder="nurse@example.com"></div>
+                        <div class="form-group"><label>License Number *</label><input type="text" id="nurseLicense" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Specialty</label>
+                            <select id="nurseSpecialty">
+                                <option value="">Select Specialty</option>
+                                <option value="Public Health Nursing">Public Health Nursing</option>
+                                <option value="Maternal and Child Health">Maternal and Child Health</option>
+                                <option value="Geriatric Nursing">Geriatric Nursing</option>
+                                <option value="General Nursing">General Nursing</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Phone Number</label><input type="text" id="nursePhone"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date Joined</label><input type="date" id="nurseDateJoined"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideNurseModal()">Cancel</button>
+                <button class="save-btn" onclick="saveNurse()">Save Nurse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit IT Staff Modal -->
+    <div class="modal" id="itModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="itModalTitle">Add New IT Staff</h2>
+                <button class="close-modal" onclick="hideITModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="itForm">
+                    <input type="hidden" id="itDocId">
+                    <div class="form-row">
+                        <div class="form-group"><label>Last Name *</label><input type="text" id="itLastName" required></div>
+                        <div class="form-group"><label>First Name *</label><input type="text" id="itFirstName" required></div>
+                        <div class="form-group"><label>Middle Name</label><input type="text" id="itMiddleName"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email Address *</label><input type="email" id="itEmail" required placeholder="it@example.com"></div>
+                        <div class="form-group"><label>Position</label>
+                            <select id="itPosition">
+                                <option value="IT Manager">IT Manager</option>
+                                <option value="System Administrator">System Administrator</option>
+                                <option value="IT Support">IT Support</option>
+                                <option value="Developer">Developer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Phone Number</label><input type="text" id="itPhone"></div>
+                        <div class="form-group"><label>Date Joined</label><input type="date" id="itDateJoined"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Salary</label><input type="number" id="itSalary" step="1000"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideITModal()">Cancel</button>
+                <button class="save-btn" onclick="saveITStaff()">Save IT Staff</button>
             </div>
         </div>
     </div>
 
     <script src="js/main.js"></script>
     <script src="js/staff.js"></script>
+
+    <script>
+    // Hide Users menu for non-Admin/non-IT users
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInfo = sessionStorage.getItem('currentUser');
+        if (userInfo) {
+            try {
+                const user = JSON.parse(userInfo);
+                const userRole = user.access_level || user.role;
+                const usersMenuItem = document.querySelector('.sidebar-menu li a[href="users.html"]');
+                if (usersMenuItem) {
+                    const parentLi = usersMenuItem.closest('li');
+                    if (userRole !== 'Admin' && userRole !== 'IT') {
+                        if (parentLi) parentLi.style.display = 'none';
+                    }
+                }
+            } catch(e) {
+                console.error("Error:", e);
+            }
+        }
+    });
+</script>
 </body>
 </html>

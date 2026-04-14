@@ -4,9 +4,10 @@
 .content-area {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 70px);
     padding: 20px 30px;
-    overflow: hidden;
+    background: #f8f9fa;
+    overflow-y: auto; /* CHANGE: Allow entire page to scroll */
+    height: calc(100vh - 70px);
 }
 
 .staff-header {
@@ -356,6 +357,81 @@
     font-size: 13px;
 }
 
+/* Additional styles for multi-table staff page */
+
+.staff-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.add-staff-btn {
+    background: #2B6896;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-staff-btn.bns-btn {
+    background: #2e7d32;
+}
+
+.add-staff-btn.nurse-btn {
+    background: #ff9800;
+}
+
+.add-staff-btn:hover {
+    opacity: 0.9;
+}
+
+.staff-section {
+    margin-bottom: 40px;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(43, 104, 150, 0.1);
+}
+
+.section-title {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2B6896;
+}
+
+.section-title h3 {
+    color: #2B6896;
+    font-size: 18px;
+    margin: 0;
+}
+
+.status-badge.status-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-badge.status-inactive {
+    background: #ffebee;
+    color: #c62828;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -409,6 +485,123 @@ select {
 
 select option {
     padding: 8px;
+}
+
+/* ===== FIX MODAL SCROLLING ISSUE ===== */
+
+/* Make modal container scrollable */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto; /* Allow modal container to scroll */
+}
+
+.modal.show {
+    display: flex;
+}
+
+/* Fix modal content height and scrolling */
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh; /* Limit height to 90% of viewport */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    margin: 20px auto;
+    overflow: hidden; /* Prevent content overflow */
+}
+
+/* Make modal body scrollable */
+.modal-body {
+    padding: 20px;
+    overflow-y: auto; /* Make body scrollable */
+    flex: 1;
+    max-height: calc(90vh - 130px); /* Adjust based on header + footer height */
+}
+
+/* Prevent header and footer from shrinking */
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2B6896;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    flex-shrink: 0;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Optional: Add a max-height for very tall forms */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #2B6896;
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #1a4a6f;
+}
+
+/* Toast notification styles - add to staff.css */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast-notification {
+    background: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    min-width: 250px;
+    text-align: center;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
 }
 
 /* Responsive */

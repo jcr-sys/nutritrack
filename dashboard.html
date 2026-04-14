@@ -258,5 +258,27 @@
     </div>
 
     <script src="js/dashboard.js"></script>
+
+    <script>
+    // Hide Users menu for non-Admin/non-IT users
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInfo = sessionStorage.getItem('currentUser');
+        if (userInfo) {
+            try {
+                const user = JSON.parse(userInfo);
+                const userRole = user.access_level || user.role;
+                const usersMenuItem = document.querySelector('.sidebar-menu li a[href="users.html"]');
+                if (usersMenuItem) {
+                    const parentLi = usersMenuItem.closest('li');
+                    if (userRole !== 'Admin' && userRole !== 'IT') {
+                        if (parentLi) parentLi.style.display = 'none';
+                    }
+                }
+            } catch(e) {
+                console.error("Error:", e);
+            }
+        }
+    });
+</script>
 </body>
 </html>
