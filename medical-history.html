@@ -224,6 +224,114 @@
         </div>
     </div>
 
+    <!-- View Medical History Modal -->
+    <div class="modal" id="viewHistoryModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Medical History Details</h2>
+                <button class="close-modal" onclick="closeViewHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewHistoryModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Medical History Modal -->
+    <div class="modal" id="editHistoryModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Edit Medical History</h2>
+                <button class="close-modal" onclick="closeEditHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editHistoryForm">
+                    <input type="hidden" id="editMedicalId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="editPatientId" readonly style="background-color: #f0f0f0;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="editPatientNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doctor ID *</label>
+                            <input type="text" id="editDoctorId" readonly style="background-color: #f0f0f0;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="editDoctorNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Condition *</label>
+                            <input type="text" id="editCondition" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Diagnosis Date</label>
+                            <input type="date" id="editDiagnosisDate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select id="editStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="Resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Treatment Notes</label>
+                            <textarea id="editTreatmentNotes" rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="editRemarks" rows="2"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditHistoryModal()">Cancel</button>
+                <button class="save-btn" onclick="updateHistory()">Update History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal" id="updateStatusModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="background: #ff9800;">
+                <h2 style="color: white;">🔄 Update Status</h2>
+                <button class="close-modal" onclick="closeUpdateStatusModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+                <p>Change status from <strong id="currentStatusDisplay"></strong> to <strong id="newStatusDisplay"></strong>?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="cancel-btn" onclick="closeUpdateStatusModal()">Cancel</button>
+                <button class="save-btn" id="confirmStatusUpdateBtn" style="background: #ff9800;">Update Status</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/medical-history.js"></script>
 

@@ -239,6 +239,110 @@
         </div>
     </div>
 
+    <!-- View Pregnancy History Modal -->
+    <div class="modal" id="viewHistoryModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Pregnancy History Details</h2>
+                <button class="close-modal" onclick="closeViewHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewHistoryModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Pregnancy History Modal -->
+    <div class="modal" id="editHistoryModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Edit Pregnancy History</h2>
+                <button class="close-modal" onclick="closeEditHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editHistoryForm">
+                    <input type="hidden" id="editHistoryId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="editPatientId" readonly style="background-color: #f0f0f0;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="editPatientNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Gravidity</label>
+                            <input type="number" id="editGravidity" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Parity</label>
+                            <input type="number" id="editParity" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type of Delivery</label>
+                            <select id="editTypeOfDelivery">
+                                <option value="">Select Delivery Type</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Cesarean">Cesarean</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Other Delivery Method</label>
+                            <input type="text" id="editOtherDeliveryMethod">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>No. of Full Term</label>
+                            <input type="number" id="editFullTerm" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>No. of Premature</label>
+                            <input type="number" id="editPremature" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>No. of Abortion</label>
+                            <input type="number" id="editAbortion" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>No. of Living Children</label>
+                            <input type="number" id="editLivingChildren" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Pregnancy Induced Hypertension</label>
+                            <select id="editPih">
+                                <option value="">Select</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="editRemarks" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditHistoryModal()">Cancel</button>
+                <button class="save-btn" onclick="updatePregnancyHistory()">Update History</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/pregnancy-history.js"></script>
 

@@ -132,11 +132,13 @@
                                     <th>Religion</th>
                                     <th>Occupation</th>
                                     <th>Address</th>
+                                    <th>Email</th>
                                     <th>Mobile Number</th>
                                     <th>Blood Type</th>
                                     <th>Allergy</th>
                                     <th>Doctor ID</th>
                                     <th>Doctor Name</th>
+                                    <th>Handled By</th>
                                     <th>Patient Type</th>
                                     <th>Actions</th>
                                 </tr>
@@ -156,7 +158,7 @@
         </div>
     </div>
 
-    <!-- Add Patient Modal (Updated Primary Doctor Section) -->
+    <!-- Add Patient Modal -->
     <div class="modal" id="addPatientModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -220,12 +222,16 @@
                             <input type="text" id="address" required>
                         </div>
                         <div class="form-group">
-                            <label>Mobile Number</label>
-                            <input type="text" id="mobileNumber" placeholder="09123456789">
+                            <label>Email Address</label>
+                            <input type="email" id="email" placeholder="patient@example.com">
                         </div>
                     </div>
                     
                     <div class="form-row">
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="text" id="mobileNumber" placeholder="09123456789">
+                        </div>
                         <div class="form-group">
                             <label>Blood Type</label>
                             <select id="bloodType">
@@ -236,13 +242,13 @@
                                 <option value="O">O</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Allergy</label>
                             <input type="text" id="allergy" placeholder="e.g., Peanuts, Penicillin">
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label>Primary Doctor ID *</label>
                             <select id="primaryDoctorId" required onchange="updateDoctorNameDisplay()">
@@ -252,6 +258,15 @@
                         <div class="form-group">
                             <label>Doctor Name</label>
                             <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Handled By (BNS/Nurse)</label>
+                            <select id="handledBy">
+                                <option value="">Select BNS or Nurse</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Patient Type *</label>
@@ -269,6 +284,151 @@
             <div class="modal-footer">
                 <button class="cancel-btn" onclick="hideAddPatientModal()">Cancel</button>
                 <button class="save-btn" onclick="savePatient()">Save Patient</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Patient Modal -->
+    <div class="modal" id="viewPatientModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Patient Details</h2>
+                <button class="close-modal" onclick="closeViewPatientModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewPatientModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewPatientModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Patient Modal -->
+    <div class="modal" id="editPatientModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Edit Patient</h2>
+                <button class="close-modal" onclick="closeEditPatientModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editPatientForm">
+                    <input type="hidden" id="editPatientId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="editLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="editFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Middle Name</label>
+                            <input type="text" id="editMiddleName">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Suffix</label>
+                            <input type="text" id="editSuffix" placeholder="Jr., Sr., III">
+                        </div>
+                        <div class="form-group">
+                            <label>Birthdate *</label>
+                            <input type="date" id="editBirthdate" required onchange="calculateEditAge()">
+                        </div>
+                        <div class="form-group">
+                            <label>Age *</label>
+                            <input type="number" id="editAge" min="0" required readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gender *</label>
+                            <select id="editGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Religion</label>
+                            <input type="text" id="editReligion">
+                        </div>
+                        <div class="form-group">
+                            <label>Occupation</label>
+                            <input type="text" id="editOccupation">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Address *</label>
+                            <input type="text" id="editAddress" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="editEmail">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="text" id="editMobileNumber" placeholder="09123456789">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Type</label>
+                            <select id="editBloodType">
+                                <option value="">Select Blood Type</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="AB">AB</option>
+                                <option value="O">O</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Allergy</label>
+                            <input type="text" id="editAllergy" placeholder="e.g., Peanuts, Penicillin">
+                        </div>
+                        <div class="form-group">
+                            <label>Primary Doctor ID *</label>
+                            <select id="editPrimaryDoctorId" required onchange="updateEditDoctorNameDisplay()">
+                                <option value="">Select Doctor ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="editDoctorNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Handled By (BNS/Nurse)</label>
+                            <select id="editHandledBy">
+                                <option value="">Select BNS or Nurse</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Type *</label>
+                            <select id="editPatientType" required>
+                                <option value="">Select Type</option>
+                                <option value="Child">Child</option>
+                                <option value="Pregnant">Pregnant</option>
+                                <option value="Senior">Senior</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditPatientModal()">Cancel</button>
+                <button class="save-btn" onclick="updatePatient()">Update Patient</button>
             </div>
         </div>
     </div>
@@ -296,6 +456,6 @@
             }
         }
     });
-</script>
+    </script>
 </body>
 </html>

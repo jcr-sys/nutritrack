@@ -150,7 +150,7 @@
         </div>
     </div>
 
-    <!-- Add Checkup Modal (Updated Doctor Section) -->
+    <!-- Add Checkup Modal -->
     <div class="modal" id="addCheckupModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -248,6 +248,147 @@
             <div class="modal-footer">
                 <button class="cancel-btn" onclick="hideAddCheckupModal()">Cancel</button>
                 <button class="save-btn" onclick="saveCheckup()">Save Checkup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Checkup Modal -->
+    <div class="modal" id="viewCheckupModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Pregnancy Checkup Details</h2>
+                <button class="close-modal" onclick="closeViewCheckupModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewCheckupModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewCheckupModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Checkup Modal -->
+    <div class="modal" id="editCheckupModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Edit Pregnancy Checkup</h2>
+                <button class="close-modal" onclick="closeEditCheckupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editCheckupForm">
+                    <input type="hidden" id="editCheckupId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <input type="text" id="editPatientId" readonly style="background-color: #f0f0f0;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="editPatientNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doctor ID *</label>
+                            <input type="text" id="editDoctorId" readonly style="background-color: #f0f0f0;" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="editDoctorNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Checkup Date *</label>
+                            <input type="date" id="editCheckupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Trimester *</label>
+                            <select id="editTrimester" required>
+                                <option value="">Select Trimester</option>
+                                <option value="1">1st Trimester</option>
+                                <option value="2">2nd Trimester</option>
+                                <option value="3">3rd Trimester</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gestational Age (weeks) *</label>
+                            <input type="number" id="editGestationalAge" min="1" max="42" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Pressure</label>
+                            <input type="text" id="editBloodPressure" placeholder="e.g., 120/80 mmHg">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="editWeight" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Next Checkup Date</label>
+                            <input type="date" id="editNextCheckupDate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ultrasound Result</label>
+                            <textarea id="editUltrasoundResult" rows="2"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Blood Test Result</label>
+                            <textarea id="editBloodTestResult" rows="2"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doctor Notes</label>
+                            <textarea id="editDoctorNotes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="editStatus">
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditCheckupModal()">Cancel</button>
+                <button class="save-btn" onclick="updateCheckup()">Update Checkup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal" id="updateStatusModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="background: #ff9800;">
+                <h2 style="color: white;">🔄 Update Status</h2>
+                <button class="close-modal" onclick="closeUpdateStatusModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+                <p>Change status from <strong id="currentStatusDisplay"></strong> to <strong id="newStatusDisplay"></strong>?</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="cancel-btn" onclick="closeUpdateStatusModal()">Cancel</button>
+                <button class="save-btn" id="confirmStatusUpdateBtn" style="background: #ff9800;">Update Status</button>
             </div>
         </div>
     </div>

@@ -114,37 +114,6 @@
                         </select>
                     </div>
                 </div>
-                
-                <!-- Status Update Modal -->
-                <div class="modal" id="statusModal">
-                    <div class="modal-content" style="max-width: 400px;">
-                        <div class="modal-header">
-                            <h2>Update Appointment Status</h2>
-                            <button class="close-modal" onclick="closeStatusModal()">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Current Status</label>
-                                <input type="text" id="currentStatusDisplay" readonly style="background-color: #f0f0f0;">
-                            </div>
-                            <div class="form-group">
-                                <label>New Status *</label>
-                                <select id="newStatusSelect" required>
-                                    <option value="">Select Status</option>
-                                    <option value="Scheduled">Scheduled</option>
-                                    <option value="Confirmed">Confirmed</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                    <option value="No Show">No Show</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
-                            <button class="save-btn" onclick="confirmStatusUpdate()">Update Status</button>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Table Container - ONLY THIS SCROLLS (Same as Patients) -->
                 <div class="table-container">
@@ -157,6 +126,8 @@
                                     <th>Patient Name</th>
                                     <th>Date</th>
                                     <th>Time</th>
+                                    <th>Meeting With (Doctor)</th>
+                                    <th>Handled By (BNS/Nurse)</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
@@ -178,7 +149,7 @@
         </div>
     </div>
 
-    <!-- Add Appointment Modal (Same style as Patients) -->
+    <!-- Add Appointment Modal -->
     <div class="modal" id="addAppointmentModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -208,6 +179,29 @@
                         <div class="form-group">
                             <label>Appointment Time *</label>
                             <input type="time" id="appointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Meeting With (Doctor) *</label>
+                            <select id="doctorId" required onchange="updateDoctorNameDisplay()">
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="doctorNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Doctor name will appear here">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Handled By (BNS/Nurse)</label>
+                            <select id="handledBy" onchange="updateHandledByNameDisplay()">
+                                <option value="">Select BNS or Nurse</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Handled By Name</label>
+                            <input type="text" id="handledByNameDisplay" readonly style="background-color: #f0f0f0;" placeholder="Name will appear here">
                         </div>
                         <div class="form-group">
                             <label>Purpose *</label>
@@ -260,6 +254,157 @@
         </div>
     </div>
 
+    <!-- View Appointment Modal -->
+    <div class="modal" id="viewAppointmentModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2>Appointment Details</h2>
+                <button class="close-modal" onclick="closeViewAppointmentModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewAppointmentModalBody"></div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeViewAppointmentModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Appointment Modal -->
+    <div class="modal" id="editAppointmentModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Edit Appointment</h2>
+                <button class="close-modal" onclick="closeEditAppointmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editAppointmentForm">
+                    <input type="hidden" id="editAppointmentId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient ID *</label>
+                            <select id="editPatientId" required onchange="updateEditPatientNameDisplay()">
+                                <option value="">Select Patient ID</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" id="editPatientNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Date *</label>
+                            <input type="date" id="editAppointmentDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Appointment Time *</label>
+                            <input type="time" id="editAppointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Meeting With (Doctor) *</label>
+                            <select id="editDoctorId" required onchange="updateEditDoctorNameDisplay()">
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" id="editDoctorNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Handled By (BNS/Nurse)</label>
+                            <select id="editHandledBy" onchange="updateEditHandledByNameDisplay()">
+                                <option value="">Select BNS or Nurse</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Handled By Name</label>
+                            <input type="text" id="editHandledByNameDisplay" readonly style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Purpose *</label>
+                            <select id="editPurpose" required>
+                                <option value="">Select Purpose</option>
+                                <option value="Prenatal Checkup">Prenatal Checkup</option>
+                                <option value="Child Immunization">Child Immunization</option>
+                                <option value="Senior Checkup">Senior Checkup</option>
+                                <option value="General Consultation">General Consultation</option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Nutrition Counseling">Nutrition Counseling</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select id="editStatus" required>
+                                <option value="">Select Status</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="No Show">No Show</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="editPriority">
+                                <option value="Normal">Normal</option>
+                                <option value="Prenatal Priority">Prenatal Priority</option>
+                                <option value="Emergency">Emergency</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea id="editRemarks" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditAppointmentModal()">Cancel</button>
+                <button class="save-btn" onclick="updateAppointment()">Update Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal (Yellow Theme) -->
+    <div class="modal" id="statusModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="background: #ff9800;">
+                <h2 style="color: white;">🔄 Update Status</h2>
+                <button class="close-modal" onclick="closeStatusModal()" style="color: white;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Current Status</label>
+                    <input type="text" id="currentStatusDisplay" readonly style="background-color: #f0f0f0;">
+                </div>
+                <div class="form-group">
+                    <label>New Status *</label>
+                    <select id="newStatusSelect" required>
+                        <option value="">Select Status</option>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="No Show">No Show</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
+                <button class="save-btn" onclick="confirmStatusUpdate()" style="background: #ff9800;">Update Status</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/main.js"></script>
     <script src="js/appointments.js"></script>
 
@@ -284,6 +429,5 @@
         }
     });
     </script>
-    
 </body>
 </html>
